@@ -8,206 +8,31 @@ workflows:
       - name: Build Android App
         script: |
           set -e
-
-          # ── Download Gradle ──────────────────────────────
-          curl -sL https://services.gradle.org/distributions/gradle-8.1-bin.zip             -o /tmp/gradle.zip
+          curl -sL https://services.gradle.org/distributions/gradle-8.1-bin.zip -o /tmp/gradle.zip
           unzip -q /tmp/gradle.zip -d /tmp/
           GRADLE=/tmp/gradle-8.1/bin/gradle
-
-          # ── Create project structure ─────────────────────
           mkdir -p app/src/main/java/com/gallery/app
-          mkdir -p app/src/main/res/layout
-          mkdir -p app/src/main/res/values
-          mkdir -p app/src/main/res/mipmap-mdpi
-          mkdir -p app/src/main/res/mipmap-hdpi
-          mkdir -p app/src/main/res/mipmap-xhdpi
-          mkdir -p app/src/main/res/mipmap-xxhdpi
+          mkdir -p app/src/main/res/mipmap-mdpi app/src/main/res/mipmap-hdpi
+          mkdir -p app/src/main/res/mipmap-xhdpi app/src/main/res/mipmap-xxhdpi
           mkdir -p app/src/main/res/mipmap-xxxhdpi
-
-          # ── settings.gradle ──────────────────────────────
-          cat > settings.gradle << 'EOF'
-rootProject.name = "GalleryApp"
-include ':app'
-EOF
-
-          # ── build.gradle (root) ──────────────────────────
-          cat > build.gradle << 'EOF'
-buildscript {
-    repositories { google(); mavenCentral() }
-    dependencies { classpath 'com.android.tools.build:gradle:8.1.0' }
-}
-allprojects {
-    repositories { google(); mavenCentral() }
-}
-EOF
-
-          # ── gradle.properties ────────────────────────────
-          cat > gradle.properties << 'EOF'
-org.gradle.jvmargs=-Xmx2048m
-android.useAndroidX=true
-android.enableJetifier=true
-EOF
-
-          # ── app/build.gradle ─────────────────────────────
-          cat > app/build.gradle << 'EOF'
-plugins { id 'com.android.application' }
-android {
-    namespace 'com.gallery.app'
-    compileSdk 34
-    defaultConfig {
-        applicationId "com.gallery.app"
-        minSdk 21
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
-    }
-    buildTypes {
-        debug { minifyEnabled false }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-}
-dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-}
-EOF
-
-          # ── AndroidManifest.xml ──────────────────────────
-          cat > app/src/main/AndroidManifest.xml << 'EOF'
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-    </application>
-</manifest>
-EOF
-
-          # ── MainActivity.java ────────────────────────────
-          cat > app/src/main/java/com/gallery/app/MainActivity.java << 'EOF'
-package com.gallery.app;
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-public class MainActivity extends Activity {
-    private WebView webView;
-    @SuppressLint({"SetJavaScriptEnabled","JavascriptInterface"})
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_main);
-        webView = findViewById(R.id.webview);
-        WebSettings s = webView.getSettings();
-        s.setJavaScriptEnabled(true);
-        s.setDomStorageEnabled(true);
-        s.setLoadWithOverviewMode(true);
-        s.setUseWideViewPort(true);
-        s.setBuiltInZoomControls(false);
-        s.setDisplayZoomControls(false);
-        s.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        s.setCacheMode(WebSettings.LOAD_DEFAULT);
-        webView.setWebViewClient(new WebViewClient(){
-            @Override public boolean shouldOverrideUrlLoading(WebView v,WebResourceRequest r){return false;}
-        });
-        webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-        webView.setHorizontalScrollBarEnabled(false);
-        webView.loadUrl("https://anasfityan.github.io/gallery/");
-    }
-    @Override public void onBackPressed(){
-        if(webView.canGoBack())webView.goBack();
-        else super.onBackPressed();
-    }
-}
-EOF
-
-          # ── activity_main.xml ────────────────────────────
-          cat > app/src/main/res/layout/activity_main.xml << 'EOF'
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
-    <WebView android:id="@+id/webview"
-        android:layout_width="match_parent" android:layout_height="match_parent"/>
-</RelativeLayout>
-EOF
-
-          # ── strings.xml ──────────────────────────────────
-          cat > app/src/main/res/values/strings.xml << 'EOF'
-<?xml version="1.0" encoding="utf-8"?>
-<resources><string name="app_name">معرض الصور</string></resources>
-EOF
-
-          # ── styles.xml ───────────────────────────────────
-          cat > app/src/main/res/values/styles.xml << 'EOF'
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">#0a66ff</item>
-        <item name="colorPrimaryDark">#0a66ff</item>
-        <item name="colorAccent">#0a66ff</item>
-        <item name="android:windowFullscreen">true</item>
-    </style>
-</resources>
-EOF
-
-          # ── Icons (generate with Python) ─────────────────
-          python3 - << 'PYEOF'
-import struct, zlib
-
-def make_png(size, color=(10,102,255)):
-    w=h=size
-    def chunk(n,d):
-        c=zlib.crc32(n+d)&0xffffffff
-        return struct.pack('>I',len(d))+n+d+struct.pack('>I',c)
-    raw=b''
-    for y in range(h):
-        raw+=b'\x00'
-        for x in range(w):
-            raw+=bytes(color)+b'\xff'
-    png=b'\x89PNG\r\n\x1a\n'
-    png+=chunk(b'IHDR',struct.pack('>IIBBBBB',w,h,8,2,0,0,0))
-    png+=chunk(b'IDAT',zlib.compress(raw))
-    png+=chunk(b'IEND',b'')
-    return png
-
-dirs={'mipmap-mdpi':48,'mipmap-hdpi':72,'mipmap-xhdpi':96,'mipmap-xxhdpi':144,'mipmap-xxxhdpi':192}
-for d,s in dirs.items():
-    p=make_png(s)
-    for n in['ic_launcher.png','ic_launcher_round.png']:
-        open(f'app/src/main/res/{d}/{n}','wb').write(p)
-print('Icons OK')
-PYEOF
-
-          # ── Build! ───────────────────────────────────────
+          echo cm9vdFByb2plY3QubmFtZSA9ICJHYWxsZXJ5QXBwIgppbmNsdWRlICI6YXBwIgo=|base64 -d>settings.gradle
+          echo YnVpbGRzY3JpcHQgewogICAgcmVwb3NpdG9yaWVzIHsgZ29vZ2xlKCk7IG1hdmVuQ2VudHJhbCgpIH0KICAgIGRlcGVuZGVuY2llcyB7IGNsYXNzcGF0aCAiY29tLmFuZHJvaWQudG9vbHMuYnVpbGQ6Z3JhZGxlOjguMS4wIiB9Cn0KYWxscHJvamVjdHMgeyByZXBvc2l0b3JpZXMgeyBnb29nbGUoKTsgbWF2ZW5DZW50cmFsKCkgfSB9Cg==|base64 -d>build.gradle
+          echo b3JnLmdyYWRsZS5qdm1hcmdzPS1YbXgyMDQ4bQphbmRyb2lkLnVzZUFuZHJvaWRYPXRydWUKYW5kcm9pZC5lbmFibGVKZXRpZmllcj10cnVlCg==|base64 -d>gradle.properties
+          mkdir -p app
+          echo cGx1Z2lucyB7IGlkICJjb20uYW5kcm9pZC5hcHBsaWNhdGlvbiIgfQphbmRyb2lkIHsKICAgIG5hbWVzcGFjZSAiY29tLmdhbGxlcnkuYXBwIgogICAgY29tcGlsZVNkayAzNAogICAgZGVmYXVsdENvbmZpZyB7CiAgICAgICAgYXBwbGljYXRpb25JZCAiY29tLmdhbGxlcnkuYXBwIgogICAgICAgIG1pblNkayAyMTsgdGFyZ2V0U2RrIDM0OyB2ZXJzaW9uQ29kZSAxOyB2ZXJzaW9uTmFtZSAiMS4wIgogICAgfQogICAgYnVpbGRUeXBlcyB7IGRlYnVnIHsgbWluaWZ5RW5hYmxlZCBmYWxzZSB9IH0KICAgIGNvbXBpbGVPcHRpb25zIHsKICAgICAgICBzb3VyY2VDb21wYXRpYmlsaXR5IEphdmFWZXJzaW9uLlZFUlNJT05fMTcKICAgICAgICB0YXJnZXRDb21wYXRpYmlsaXR5IEphdmFWZXJzaW9uLlZFUlNJT05fMTcKICAgIH0KfQpkZXBlbmRlbmNpZXMgewogICAgaW1wbGVtZW50YXRpb24gImFuZHJvaWR4LmFwcGNvbXBhdDphcHBjb21wYXQ6MS42LjEiCiAgICBpbXBsZW1lbnRhdGlvbiAiYW5kcm9pZHguY29uc3RyYWludGxheW91dDpjb25zdHJhaW50bGF5b3V0OjIuMS40Igp9Cg==|base64 -d>app/build.gradle
+          mkdir -p app/src/main
+          echo PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPG1hbmlmZXN0IHhtbG5zOmFuZHJvaWQ9Imh0dHA6Ly9zY2hlbWFzLmFuZHJvaWQuY29tL2Fway9yZXMvYW5kcm9pZCI+CiAgICA8dXNlcy1wZXJtaXNzaW9uIGFuZHJvaWQ6bmFtZT0iYW5kcm9pZC5wZXJtaXNzaW9uLklOVEVSTkVUIi8+CiAgICA8YXBwbGljYXRpb24gYW5kcm9pZDphbGxvd0JhY2t1cD0idHJ1ZSIgYW5kcm9pZDppY29uPSJAbWlwbWFwL2ljX2xhdW5jaGVyIgogICAgICAgIGFuZHJvaWQ6bGFiZWw9IkBzdHJpbmcvYXBwX25hbWUiIGFuZHJvaWQ6cm91bmRJY29uPSJAbWlwbWFwL2ljX2xhdW5jaGVyX3JvdW5kIgogICAgICAgIGFuZHJvaWQ6c3VwcG9ydHNSdGw9InRydWUiIGFuZHJvaWQ6dGhlbWU9IkBzdHlsZS9BcHBUaGVtZSIKICAgICAgICBhbmRyb2lkOnVzZXNDbGVhcnRleHRUcmFmZmljPSJ0cnVlIj4KICAgICAgICA8YWN0aXZpdHkgYW5kcm9pZDpuYW1lPSIuTWFpbkFjdGl2aXR5IiBhbmRyb2lkOmV4cG9ydGVkPSJ0cnVlIgogICAgICAgICAgICBhbmRyb2lkOmNvbmZpZ0NoYW5nZXM9Im9yaWVudGF0aW9ufHNjcmVlblNpemUiCiAgICAgICAgICAgIGFuZHJvaWQ6d2luZG93U29mdElucHV0TW9kZT0iYWRqdXN0UmVzaXplIj4KICAgICAgICAgICAgPGludGVudC1maWx0ZXI+CiAgICAgICAgICAgICAgICA8YWN0aW9uIGFuZHJvaWQ6bmFtZT0iYW5kcm9pZC5pbnRlbnQuYWN0aW9uLk1BSU4iLz4KICAgICAgICAgICAgICAgIDxjYXRlZ29yeSBhbmRyb2lkOm5hbWU9ImFuZHJvaWQuaW50ZW50LmNhdGVnb3J5LkxBVU5DSEVSIi8+CiAgICAgICAgICAgIDwvaW50ZW50LWZpbHRlcj4KICAgICAgICA8L2FjdGl2aXR5PgogICAgPC9hcHBsaWNhdGlvbj4KPC9tYW5pZmVzdD4K|base64 -d>app/src/main/AndroidManifest.xml
+          mkdir -p app/src/main/java/com/gallery/app
+          echo cGFja2FnZSBjb20uZ2FsbGVyeS5hcHA7CmltcG9ydCBhbmRyb2lkLmFubm90YXRpb24uU3VwcHJlc3NMaW50OwppbXBvcnQgYW5kcm9pZC5hcHAuQWN0aXZpdHk7CmltcG9ydCBhbmRyb2lkLm9zLkJ1bmRsZTsKaW1wb3J0IGFuZHJvaWQudmlldy5WaWV3OwppbXBvcnQgYW5kcm9pZC52aWV3LldpbmRvdzsKaW1wb3J0IGFuZHJvaWQudmlldy5XaW5kb3dNYW5hZ2VyOwppbXBvcnQgYW5kcm9pZC53ZWJraXQuV2ViUmVzb3VyY2VSZXF1ZXN0OwppbXBvcnQgYW5kcm9pZC53ZWJraXQuV2ViU2V0dGluZ3M7CmltcG9ydCBhbmRyb2lkLndlYmtpdC5XZWJWaWV3OwppbXBvcnQgYW5kcm9pZC53ZWJraXQuV2ViVmlld0NsaWVudDsKcHVibGljIGNsYXNzIE1haW5BY3Rpdml0eSBleHRlbmRzIEFjdGl2aXR5IHsKICAgIHByaXZhdGUgV2ViVmlldyB3ZWJWaWV3OwogICAgQFN1cHByZXNzTGludCh7IlNldEphdmFTY3JpcHRFbmFibGVkIiwiSmF2YXNjcmlwdEludGVyZmFjZSJ9KQogICAgQE92ZXJyaWRlCiAgICBwcm90ZWN0ZWQgdm9pZCBvbkNyZWF0ZShCdW5kbGUgc2F2ZWRJbnN0YW5jZVN0YXRlKSB7CiAgICAgICAgc3VwZXIub25DcmVhdGUoc2F2ZWRJbnN0YW5jZVN0YXRlKTsKICAgICAgICByZXF1ZXN0V2luZG93RmVhdHVyZShXaW5kb3cuRkVBVFVSRV9OT19USVRMRSk7CiAgICAgICAgZ2V0V2luZG93KCkuc2V0RmxhZ3MoV2luZG93TWFuYWdlci5MYXlvdXRQYXJhbXMuRkxBR19GVUxMU0NSRUVOLFdpbmRvd01hbmFnZXIuTGF5b3V0UGFyYW1zLkZMQUdfRlVMTFNDUkVFTik7CiAgICAgICAgc2V0Q29udGVudFZpZXcoUi5sYXlvdXQuYWN0aXZpdHlfbWFpbik7CiAgICAgICAgd2ViVmlldyA9IGZpbmRWaWV3QnlJZChSLmlkLndlYnZpZXcpOwogICAgICAgIFdlYlNldHRpbmdzIHMgPSB3ZWJWaWV3LmdldFNldHRpbmdzKCk7CiAgICAgICAgcy5zZXRKYXZhU2NyaXB0RW5hYmxlZCh0cnVlKTsKICAgICAgICBzLnNldERvbVN0b3JhZ2VFbmFibGVkKHRydWUpOwogICAgICAgIHMuc2V0TG9hZFdpdGhPdmVydmlld01vZGUodHJ1ZSk7CiAgICAgICAgcy5zZXRVc2VXaWRlVmlld1BvcnQodHJ1ZSk7CiAgICAgICAgcy5zZXRCdWlsdEluWm9vbUNvbnRyb2xzKGZhbHNlKTsKICAgICAgICBzLnNldERpc3BsYXlab29tQ29udHJvbHMoZmFsc2UpOwogICAgICAgIHMuc2V0TWl4ZWRDb250ZW50TW9kZShXZWJTZXR0aW5ncy5NSVhFRF9DT05URU5UX0FMV0FZU19BTExPVyk7CiAgICAgICAgd2ViVmlldy5zZXRXZWJWaWV3Q2xpZW50KG5ldyBXZWJWaWV3Q2xpZW50KCl7CiAgICAgICAgICAgIEBPdmVycmlkZSBwdWJsaWMgYm9vbGVhbiBzaG91bGRPdmVycmlkZVVybExvYWRpbmcoV2ViVmlldyB2LFdlYlJlc291cmNlUmVxdWVzdCByKXtyZXR1cm4gZmFsc2U7fQogICAgICAgIH0pOwogICAgICAgIHdlYlZpZXcuc2V0U2Nyb2xsQmFyU3R5bGUoVmlldy5TQ1JPTExCQVJTX0lOU0lERV9PVkVSTEFZKTsKICAgICAgICB3ZWJWaWV3LnNldEhvcml6b250YWxTY3JvbGxCYXJFbmFibGVkKGZhbHNlKTsKICAgICAgICB3ZWJWaWV3LmxvYWRVcmwoImh0dHBzOi8vYW5hc2ZpdHlhbi5naXRodWIuaW8vZ2FsbGVyeS8iKTsKICAgIH0KICAgIEBPdmVycmlkZSBwdWJsaWMgdm9pZCBvbkJhY2tQcmVzc2VkKCl7aWYod2ViVmlldy5jYW5Hb0JhY2soKSl3ZWJWaWV3LmdvQmFjaygpO2Vsc2Ugc3VwZXIub25CYWNrUHJlc3NlZCgpO30KfQo=|base64 -d>app/src/main/java/com/gallery/app/MainActivity.java
+          mkdir -p app/src/main/res/layout
+          echo PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPFJlbGF0aXZlTGF5b3V0IHhtbG5zOmFuZHJvaWQ9Imh0dHA6Ly9zY2hlbWFzLmFuZHJvaWQuY29tL2Fway9yZXMvYW5kcm9pZCIKICAgIGFuZHJvaWQ6bGF5b3V0X3dpZHRoPSJtYXRjaF9wYXJlbnQiIGFuZHJvaWQ6bGF5b3V0X2hlaWdodD0ibWF0Y2hfcGFyZW50Ij4KICAgIDxXZWJWaWV3IGFuZHJvaWQ6aWQ9IkAraWQvd2VidmlldyIKICAgICAgICBhbmRyb2lkOmxheW91dF93aWR0aD0ibWF0Y2hfcGFyZW50IiBhbmRyb2lkOmxheW91dF9oZWlnaHQ9Im1hdGNoX3BhcmVudCIvPgo8L1JlbGF0aXZlTGF5b3V0Pgo=|base64 -d>app/src/main/res/layout/activity_main.xml
+          mkdir -p app/src/main/res/values
+          echo PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHJlc291cmNlcz48c3RyaW5nIG5hbWU9ImFwcF9uYW1lIj5HYWxsZXJ5PC9zdHJpbmc+PC9yZXNvdXJjZXM+Cg==|base64 -d>app/src/main/res/values/strings.xml
+          mkdir -p app/src/main/res/values
+          echo PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHJlc291cmNlcz4KICAgIDxzdHlsZSBuYW1lPSJBcHBUaGVtZSIgcGFyZW50PSJUaGVtZS5BcHBDb21wYXQuTGlnaHQuTm9BY3Rpb25CYXIiPgogICAgICAgIDxpdGVtIG5hbWU9ImNvbG9yUHJpbWFyeSI+IzBhNjZmZjwvaXRlbT4KICAgICAgICA8aXRlbSBuYW1lPSJjb2xvclByaW1hcnlEYXJrIj4jMGE2NmZmPC9pdGVtPgogICAgICAgIDxpdGVtIG5hbWU9ImNvbG9yQWNjZW50Ij4jMGE2NmZmPC9pdGVtPgogICAgICAgIDxpdGVtIG5hbWU9ImFuZHJvaWQ6d2luZG93RnVsbHNjcmVlbiI+dHJ1ZTwvaXRlbT4KICAgIDwvc3R5bGU+CjwvcmVzb3VyY2VzPgo=|base64 -d>app/src/main/res/values/styles.xml
+          echo aW1wb3J0IHN0cnVjdCx6bGliCmRlZiBwbmcocyk6CiAgICBkZWYgYyhuLGQpOgogICAgICAgIHI9emxpYi5jcmMzMihuK2QpJjB4ZmZmZmZmZmYKICAgICAgICByZXR1cm4gc3RydWN0LnBhY2soIj5JIixsZW4oZCkpK24rZCtzdHJ1Y3QucGFjaygiPkkiLHIpCiAgICByYXc9YiIiLmpvaW4oYiJceDAwIitieXRlcyhbMTAsMTAyLDI1NSwyNTVdKSpzIGZvciBfIGluIHJhbmdlKHMpKQogICAgcmV0dXJuIGIiXHg4OVBOR1xyXG5ceDFhXG4iK2MoYiJJSERSIixzdHJ1Y3QucGFjaygiPklJQkJCQkIiLHMscyw4LDIsMCwwLDApKStjKGIiSURBVCIsemxpYi5jb21wcmVzcyhyYXcpKStjKGIiSUVORCIsYiIiKQpzaXplcz17Im1pcG1hcC1tZHBpIjo0OCwibWlwbWFwLWhkcGkiOjcyLCJtaXBtYXAteGhkcGkiOjk2LCJtaXBtYXAteHhoZHBpIjoxNDQsIm1pcG1hcC14eHhoZHBpIjoxOTJ9CltvcGVuKGYiYXBwL3NyYy9tYWluL3Jlcy97ZH0ve259Iiwid2IiKS53cml0ZShwbmcocykpIGZvciBkLHMgaW4gc2l6ZXMuaXRlbXMoKSBmb3IgbiBpblsiaWNfbGF1bmNoZXIucG5nIiwiaWNfbGF1bmNoZXJfcm91bmQucG5nIl1dCnByaW50KCJJY29ucyBPSyIpCg==|base64 -d>/tmp/mk_icons.py
+          python3 /tmp/mk_icons.py
           $GRADLE assembleDebug --no-daemon
-
     artifacts:
       - app/build/outputs/**/*.apk
     publishing:
