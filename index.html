@@ -1,50 +1,420 @@
-workflows:
-  android-workflow:
-    name: Gallery App Build
-    max_build_duration: 60
-    environment:
-      java: 17
-    scripts:
-      - name: Build Android App
-        script: |
-          set -e
-          curl -sL https://services.gradle.org/distributions/gradle-8.1-bin.zip -o /tmp/gradle.zip
-          unzip -q /tmp/gradle.zip -d /tmp/
-          GRADLE=/tmp/gradle-8.1/bin/gradle
-          mkdir -p app/src/main/java/com/gallery/app
-          mkdir -p app/src/main/res/mipmap-mdpi app/src/main/res/mipmap-hdpi
-          mkdir -p app/src/main/res/mipmap-xhdpi app/src/main/res/mipmap-xxhdpi
-          mkdir -p app/src/main/res/mipmap-xxxhdpi
-          echo cm9vdFByb2plY3QubmFtZSA9ICJHYWxsZXJ5QXBwIgppbmNsdWRlICI6YXBwIgo=|base64 -d>settings.gradle
-          echo YnVpbGRzY3JpcHQgewogICAgcmVwb3NpdG9yaWVzIHsgZ29vZ2xlKCk7IG1hdmVuQ2VudHJhbCgpIH0KICAgIGRlcGVuZGVuY2llcyB7IGNsYXNzcGF0aCAiY29tLmFuZHJvaWQudG9vbHMuYnVpbGQ6Z3JhZGxlOjguMS4wIiB9Cn0KYWxscHJvamVjdHMgeyByZXBvc2l0b3JpZXMgeyBnb29nbGUoKTsgbWF2ZW5DZW50cmFsKCkgfSB9Cg==|base64 -d>build.gradle
-          echo b3JnLmdyYWRsZS5qdm1hcmdzPS1YbXgyMDQ4bQphbmRyb2lkLnVzZUFuZHJvaWRYPXRydWUKYW5kcm9pZC5lbmFibGVKZXRpZmllcj10cnVlCg==|base64 -d>gradle.properties
-          mkdir -p app
-          echo cGx1Z2lucyB7IGlkICJjb20uYW5kcm9pZC5hcHBsaWNhdGlvbiIgfQphbmRyb2lkIHsKICAgIG5hbWVzcGFjZSAiY29tLmdhbGxlcnkuYXBwIgogICAgY29tcGlsZVNkayAzNAogICAgZGVmYXVsdENvbmZpZyB7CiAgICAgICAgYXBwbGljYXRpb25JZCAiY29tLmdhbGxlcnkuYXBwIgogICAgICAgIG1pblNkayAyMQogICAgICAgIHRhcmdldFNkayAzNAogICAgICAgIHZlcnNpb25Db2RlIDEKICAgICAgICB2ZXJzaW9uTmFtZSAiMS4wIgogICAgfQogICAgYnVpbGRUeXBlcyB7IGRlYnVnIHsgbWluaWZ5RW5hYmxlZCBmYWxzZSB9IH0KICAgIGNvbXBpbGVPcHRpb25zIHsKICAgICAgICBzb3VyY2VDb21wYXRpYmlsaXR5IEphdmFWZXJzaW9uLlZFUlNJT05fMTcKICAgICAgICB0YXJnZXRDb21wYXRpYmlsaXR5IEphdmFWZXJzaW9uLlZFUlNJT05fMTcKICAgIH0KfQpkZXBlbmRlbmNpZXMgewogICAgaW1wbGVtZW50YXRpb24gImFuZHJvaWR4LmFwcGNvbXBhdDphcHBjb21wYXQ6MS42LjEiCiAgICBpbXBsZW1lbnRhdGlvbiAiYW5kcm9pZHgucmVjeWNsZXJ2aWV3OnJlY3ljbGVydmlldzoxLjMuMSIKICAgIGltcGxlbWVudGF0aW9uICJjb20uZ2l0aHViLmJ1bXB0ZWNoLmdsaWRlOmdsaWRlOjQuMTYuMCIKICAgIGFubm90YXRpb25Qcm9jZXNzb3IgImNvbS5naXRodWIuYnVtcHRlY2guZ2xpZGU6Y29tcGlsZXI6NC4xNi4wIgp9Cg==|base64 -d>app/build.gradle
-          mkdir -p app/src/main
-          echo PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPG1hbmlmZXN0IHhtbG5zOmFuZHJvaWQ9Imh0dHA6Ly9zY2hlbWFzLmFuZHJvaWQuY29tL2Fway9yZXMvYW5kcm9pZCI+CiAgICA8dXNlcy1wZXJtaXNzaW9uIGFuZHJvaWQ6bmFtZT0iYW5kcm9pZC5wZXJtaXNzaW9uLlJFQURfTUVESUFfSU1BR0VTIi8+CiAgICA8dXNlcy1wZXJtaXNzaW9uIGFuZHJvaWQ6bmFtZT0iYW5kcm9pZC5wZXJtaXNzaW9uLlJFQURfRVhURVJOQUxfU1RPUkFHRSIgYW5kcm9pZDptYXhTZGtWZXJzaW9uPSIzMiIvPgogICAgPGFwcGxpY2F0aW9uCiAgICAgICAgYW5kcm9pZDphbGxvd0JhY2t1cD0idHJ1ZSIKICAgICAgICBhbmRyb2lkOmljb249IkBtaXBtYXAvaWNfbGF1bmNoZXIiCiAgICAgICAgYW5kcm9pZDpsYWJlbD0iQHN0cmluZy9hcHBfbmFtZSIKICAgICAgICBhbmRyb2lkOnJvdW5kSWNvbj0iQG1pcG1hcC9pY19sYXVuY2hlcl9yb3VuZCIKICAgICAgICBhbmRyb2lkOnN1cHBvcnRzUnRsPSJ0cnVlIgogICAgICAgIGFuZHJvaWQ6dGhlbWU9IkBzdHlsZS9BcHBUaGVtZSI+CiAgICAgICAgPGFjdGl2aXR5IGFuZHJvaWQ6bmFtZT0iLk1haW5BY3Rpdml0eSIgYW5kcm9pZDpleHBvcnRlZD0idHJ1ZSI+CiAgICAgICAgICAgIDxpbnRlbnQtZmlsdGVyPgogICAgICAgICAgICAgICAgPGFjdGlvbiBhbmRyb2lkOm5hbWU9ImFuZHJvaWQuaW50ZW50LmFjdGlvbi5NQUlOIi8+CiAgICAgICAgICAgICAgICA8Y2F0ZWdvcnkgYW5kcm9pZDpuYW1lPSJhbmRyb2lkLmludGVudC5jYXRlZ29yeS5MQVVOQ0hFUiIvPgogICAgICAgICAgICA8L2ludGVudC1maWx0ZXI+CiAgICAgICAgPC9hY3Rpdml0eT4KICAgICAgICA8YWN0aXZpdHkgYW5kcm9pZDpuYW1lPSIuRnVsbHNjcmVlbkFjdGl2aXR5IiBhbmRyb2lkOmV4cG9ydGVkPSJmYWxzZSIvPgogICAgPC9hcHBsaWNhdGlvbj4KPC9tYW5pZmVzdD4K|base64 -d>app/src/main/AndroidManifest.xml
-          mkdir -p app/src/main/java/com/gallery/app
-          echo cGFja2FnZSBjb20uZ2FsbGVyeS5hcHA7CmltcG9ydCBhbmRyb2lkLk1hbmlmZXN0OwppbXBvcnQgYW5kcm9pZC5jb250ZW50LkludGVudDsKaW1wb3J0IGFuZHJvaWQuY29udGVudC5wbS5QYWNrYWdlTWFuYWdlcjsKaW1wb3J0IGFuZHJvaWQuZGF0YWJhc2UuQ3Vyc29yOwppbXBvcnQgYW5kcm9pZC5uZXQuVXJpOwppbXBvcnQgYW5kcm9pZC5vcy5CdWlsZDsKaW1wb3J0IGFuZHJvaWQub3MuQnVuZGxlOwppbXBvcnQgYW5kcm9pZC5wcm92aWRlci5NZWRpYVN0b3JlOwppbXBvcnQgYW5kcm9pZC52aWV3LldpbmRvd01hbmFnZXI7CmltcG9ydCBhbmRyb2lkLndpZGdldC5Ub2FzdDsKaW1wb3J0IGFuZHJvaWR4LmFubm90YXRpb24uTm9uTnVsbDsKaW1wb3J0IGFuZHJvaWR4LmFwcGNvbXBhdC5hcHAuQXBwQ29tcGF0QWN0aXZpdHk7CmltcG9ydCBhbmRyb2lkeC5jb3JlLmFwcC5BY3Rpdml0eUNvbXBhdDsKaW1wb3J0IGFuZHJvaWR4LmNvcmUuY29udGVudC5Db250ZXh0Q29tcGF0OwppbXBvcnQgYW5kcm9pZHgucmVjeWNsZXJ2aWV3LndpZGdldC5HcmlkTGF5b3V0TWFuYWdlcjsKaW1wb3J0IGFuZHJvaWR4LnJlY3ljbGVydmlldy53aWRnZXQuUmVjeWNsZXJWaWV3OwppbXBvcnQgamF2YS51dGlsLkFycmF5TGlzdDsKaW1wb3J0IGphdmEudXRpbC5MaXN0OwpwdWJsaWMgY2xhc3MgTWFpbkFjdGl2aXR5IGV4dGVuZHMgQXBwQ29tcGF0QWN0aXZpdHkgewogICAgcHJpdmF0ZSBzdGF0aWMgZmluYWwgaW50IFBFUk1JU1NJT05fUkVRVUVTVCA9IDEwMDsKICAgIHByaXZhdGUgUmVjeWNsZXJWaWV3IHJlY3ljbGVyVmlldzsKICAgIHByaXZhdGUgUGhvdG9BZGFwdGVyIGFkYXB0ZXI7CiAgICBwcml2YXRlIExpc3Q8U3RyaW5nPiBwaG90b1BhdGhzID0gbmV3IEFycmF5TGlzdDw+KCk7CiAgICBAT3ZlcnJpZGUKICAgIHByb3RlY3RlZCB2b2lkIG9uQ3JlYXRlKEJ1bmRsZSBzYXZlZEluc3RhbmNlU3RhdGUpIHsKICAgICAgICBzdXBlci5vbkNyZWF0ZShzYXZlZEluc3RhbmNlU3RhdGUpOwogICAgICAgIGdldFdpbmRvdygpLnNldEZsYWdzKFdpbmRvd01hbmFnZXIuTGF5b3V0UGFyYW1zLkZMQUdfRlVMTFNDUkVFTiwgV2luZG93TWFuYWdlci5MYXlvdXRQYXJhbXMuRkxBR19GVUxMU0NSRUVOKTsKICAgICAgICBzZXRDb250ZW50VmlldyhSLmxheW91dC5hY3Rpdml0eV9tYWluKTsKICAgICAgICByZWN5Y2xlclZpZXcgPSBmaW5kVmlld0J5SWQoUi5pZC5yZWN5Y2xlclZpZXcpOwogICAgICAgIHJlY3ljbGVyVmlldy5zZXRMYXlvdXRNYW5hZ2VyKG5ldyBHcmlkTGF5b3V0TWFuYWdlcih0aGlzLCAzKSk7CiAgICAgICAgYWRhcHRlciA9IG5ldyBQaG90b0FkYXB0ZXIodGhpcywgcGhvdG9QYXRocywgcG9zIC0+IHsKICAgICAgICAgICAgSW50ZW50IGkgPSBuZXcgSW50ZW50KHRoaXMsIEZ1bGxzY3JlZW5BY3Rpdml0eS5jbGFzcyk7CiAgICAgICAgICAgIGkucHV0U3RyaW5nQXJyYXlMaXN0RXh0cmEoInBob3RvcyIsIG5ldyBBcnJheUxpc3Q8PihwaG90b1BhdGhzKSk7CiAgICAgICAgICAgIGkucHV0RXh0cmEoImluZGV4IiwgcG9zKTsKICAgICAgICAgICAgc3RhcnRBY3Rpdml0eShpKTsKICAgICAgICB9KTsKICAgICAgICByZWN5Y2xlclZpZXcuc2V0QWRhcHRlcihhZGFwdGVyKTsKICAgICAgICBjaGVja1Blcm1pc3Npb24oKTsKICAgIH0KICAgIHByaXZhdGUgdm9pZCBjaGVja1Blcm1pc3Npb24oKSB7CiAgICAgICAgU3RyaW5nIHBlcm0gPSBCdWlsZC5WRVJTSU9OLlNES19JTlQgPj0gQnVpbGQuVkVSU0lPTl9DT0RFUy5USVJBTUlTVQogICAgICAgICAgICA/IE1hbmlmZXN0LnBlcm1pc3Npb24uUkVBRF9NRURJQV9JTUFHRVMKICAgICAgICAgICAgOiBNYW5pZmVzdC5wZXJtaXNzaW9uLlJFQURfRVhURVJOQUxfU1RPUkFHRTsKICAgICAgICBpZiAoQ29udGV4dENvbXBhdC5jaGVja1NlbGZQZXJtaXNzaW9uKHRoaXMsIHBlcm0pID09IFBhY2thZ2VNYW5hZ2VyLlBFUk1JU1NJT05fR1JBTlRFRCkgewogICAgICAgICAgICBsb2FkUGhvdG9zKCk7CiAgICAgICAgfSBlbHNlIHsKICAgICAgICAgICAgQWN0aXZpdHlDb21wYXQucmVxdWVzdFBlcm1pc3Npb25zKHRoaXMsIG5ldyBTdHJpbmdbXXtwZXJtfSwgUEVSTUlTU0lPTl9SRVFVRVNUKTsKICAgICAgICB9CiAgICB9CiAgICBAT3ZlcnJpZGUKICAgIHB1YmxpYyB2b2lkIG9uUmVxdWVzdFBlcm1pc3Npb25zUmVzdWx0KGludCByZXEsIEBOb25OdWxsIFN0cmluZ1tdIHBlcm1zLCBATm9uTnVsbCBpbnRbXSByZXN1bHRzKSB7CiAgICAgICAgc3VwZXIub25SZXF1ZXN0UGVybWlzc2lvbnNSZXN1bHQocmVxLCBwZXJtcywgcmVzdWx0cyk7CiAgICAgICAgaWYgKHJlc3VsdHMubGVuZ3RoID4gMCAmJiByZXN1bHRzWzBdID09IFBhY2thZ2VNYW5hZ2VyLlBFUk1JU1NJT05fR1JBTlRFRCkgbG9hZFBob3RvcygpOwogICAgICAgIGVsc2UgVG9hc3QubWFrZVRleHQodGhpcywgItmK2KzYqCDYp9mE2LPZhdin2K0g2KjYp9mE2YjYtdmI2YQg2YTZhNi12YjYsSIsIFRvYXN0LkxFTkdUSF9MT05HKS5zaG93KCk7CiAgICB9CiAgICBwcml2YXRlIHZvaWQgbG9hZFBob3RvcygpIHsKICAgICAgICBVcmkgdXJpID0gTWVkaWFTdG9yZS5JbWFnZXMuTWVkaWEuRVhURVJOQUxfQ09OVEVOVF9VUkk7CiAgICAgICAgU3RyaW5nW10gcHJvaiA9IHtNZWRpYVN0b3JlLkltYWdlcy5NZWRpYS5EQVRBfTsKICAgICAgICBTdHJpbmcgc29ydCA9IE1lZGlhU3RvcmUuSW1hZ2VzLk1lZGlhLkRBVEVfQURERUQgKyAiIERFU0MiOwogICAgICAgIEN1cnNvciBjID0gZ2V0Q29udGVudFJlc29sdmVyKCkucXVlcnkodXJpLCBwcm9qLCBudWxsLCBudWxsLCBzb3J0KTsKICAgICAgICBpZiAoYyAhPSBudWxsKSB7CiAgICAgICAgICAgIHdoaWxlIChjLm1vdmVUb05leHQoKSkgewogICAgICAgICAgICAgICAgcGhvdG9QYXRocy5hZGQoYy5nZXRTdHJpbmcoYy5nZXRDb2x1bW5JbmRleE9yVGhyb3coTWVkaWFTdG9yZS5JbWFnZXMuTWVkaWEuREFUQSkpKTsKICAgICAgICAgICAgfQogICAgICAgICAgICBjLmNsb3NlKCk7CiAgICAgICAgfQogICAgICAgIGFkYXB0ZXIubm90aWZ5RGF0YVNldENoYW5nZWQoKTsKICAgIH0KfQo=|base64 -d>app/src/main/java/com/gallery/app/MainActivity.java
-          mkdir -p app/src/main/java/com/gallery/app
-          echo cGFja2FnZSBjb20uZ2FsbGVyeS5hcHA7CmltcG9ydCBhbmRyb2lkLmNvbnRlbnQuQ29udGV4dDsKaW1wb3J0IGFuZHJvaWQudmlldy5WaWV3OwppbXBvcnQgYW5kcm9pZC52aWV3LlZpZXdHcm91cDsKaW1wb3J0IGFuZHJvaWQud2lkZ2V0LkltYWdlVmlldzsKaW1wb3J0IGFuZHJvaWR4LmFubm90YXRpb24uTm9uTnVsbDsKaW1wb3J0IGFuZHJvaWR4LnJlY3ljbGVydmlldy53aWRnZXQuUmVjeWNsZXJWaWV3OwppbXBvcnQgY29tLmJ1bXB0ZWNoLmdsaWRlLkdsaWRlOwppbXBvcnQgamF2YS51dGlsLkxpc3Q7CnB1YmxpYyBjbGFzcyBQaG90b0FkYXB0ZXIgZXh0ZW5kcyBSZWN5Y2xlclZpZXcuQWRhcHRlcjxQaG90b0FkYXB0ZXIuVkg+IHsKICAgIGludGVyZmFjZSBPbkNsaWNrIHsgdm9pZCBvbkNsaWNrKGludCBwb3MpOyB9CiAgICBwcml2YXRlIENvbnRleHQgY3R4OwogICAgcHJpdmF0ZSBMaXN0PFN0cmluZz4gcGF0aHM7CiAgICBwcml2YXRlIE9uQ2xpY2sgbGlzdGVuZXI7CiAgICBwdWJsaWMgUGhvdG9BZGFwdGVyKENvbnRleHQgY3R4LCBMaXN0PFN0cmluZz4gcGF0aHMsIE9uQ2xpY2sgbCkgewogICAgICAgIHRoaXMuY3R4PWN0eDsgdGhpcy5wYXRocz1wYXRoczsgdGhpcy5saXN0ZW5lcj1sOwogICAgfQogICAgQE5vbk51bGwgQE92ZXJyaWRlCiAgICBwdWJsaWMgVkggb25DcmVhdGVWaWV3SG9sZGVyKEBOb25OdWxsIFZpZXdHcm91cCBwYXJlbnQsIGludCB2aWV3VHlwZSkgewogICAgICAgIEltYWdlVmlldyBpdiA9IG5ldyBJbWFnZVZpZXcoY3R4KTsKICAgICAgICBpbnQgc2l6ZSA9IHBhcmVudC5nZXRXaWR0aCgpLzM7CiAgICAgICAgaXYuc2V0TGF5b3V0UGFyYW1zKG5ldyBSZWN5Y2xlclZpZXcuTGF5b3V0UGFyYW1zKHNpemUsIHNpemUpKTsKICAgICAgICBpdi5zZXRTY2FsZVR5cGUoSW1hZ2VWaWV3LlNjYWxlVHlwZS5DRU5URVJfQ1JPUCk7CiAgICAgICAgaXYuc2V0UGFkZGluZygyLDIsMiwyKTsKICAgICAgICByZXR1cm4gbmV3IFZIKGl2KTsKICAgIH0KICAgIEBPdmVycmlkZQogICAgcHVibGljIHZvaWQgb25CaW5kVmlld0hvbGRlcihATm9uTnVsbCBWSCBoLCBpbnQgcG9zKSB7CiAgICAgICAgR2xpZGUud2l0aChjdHgpLmxvYWQocGF0aHMuZ2V0KHBvcykpLnRodW1ibmFpbCgwLjFmKS5pbnRvKChJbWFnZVZpZXcpaC5pdGVtVmlldyk7CiAgICAgICAgaC5pdGVtVmlldy5zZXRPbkNsaWNrTGlzdGVuZXIodiAtPiBsaXN0ZW5lci5vbkNsaWNrKHBvcykpOwogICAgfQogICAgQE92ZXJyaWRlIHB1YmxpYyBpbnQgZ2V0SXRlbUNvdW50KCl7cmV0dXJuIHBhdGhzLnNpemUoKTt9CiAgICBzdGF0aWMgY2xhc3MgVkggZXh0ZW5kcyBSZWN5Y2xlclZpZXcuVmlld0hvbGRlciB7IFZIKFZpZXcgdil7c3VwZXIodik7fSB9Cn0K|base64 -d>app/src/main/java/com/gallery/app/PhotoAdapter.java
-          mkdir -p app/src/main/java/com/gallery/app
-          echo cGFja2FnZSBjb20uZ2FsbGVyeS5hcHA7CmltcG9ydCBhbmRyb2lkLm9zLkJ1bmRsZTsKaW1wb3J0IGFuZHJvaWQudmlldy5WaWV3OwppbXBvcnQgYW5kcm9pZC52aWV3LldpbmRvd01hbmFnZXI7CmltcG9ydCBhbmRyb2lkLndpZGdldC5JbWFnZVZpZXc7CmltcG9ydCBhbmRyb2lkLndpZGdldC5UZXh0VmlldzsKaW1wb3J0IGFuZHJvaWR4LmFwcGNvbXBhdC5hcHAuQXBwQ29tcGF0QWN0aXZpdHk7CmltcG9ydCBjb20uYnVtcHRlY2guZ2xpZGUuR2xpZGU7CmltcG9ydCBqYXZhLnV0aWwuQXJyYXlMaXN0OwppbXBvcnQgamF2YS51dGlsLkxpc3Q7CnB1YmxpYyBjbGFzcyBGdWxsc2NyZWVuQWN0aXZpdHkgZXh0ZW5kcyBBcHBDb21wYXRBY3Rpdml0eSB7CiAgICBwcml2YXRlIExpc3Q8U3RyaW5nPiBwaG90b3M7CiAgICBwcml2YXRlIGludCBpbmRleDsKICAgIHByaXZhdGUgSW1hZ2VWaWV3IGltYWdlVmlldzsKICAgIHByaXZhdGUgVGV4dFZpZXcgY291bnRlcjsKICAgIEBPdmVycmlkZQogICAgcHJvdGVjdGVkIHZvaWQgb25DcmVhdGUoQnVuZGxlIHNhdmVkSW5zdGFuY2VTdGF0ZSkgewogICAgICAgIHN1cGVyLm9uQ3JlYXRlKHNhdmVkSW5zdGFuY2VTdGF0ZSk7CiAgICAgICAgZ2V0V2luZG93KCkuc2V0RmxhZ3MoV2luZG93TWFuYWdlci5MYXlvdXRQYXJhbXMuRkxBR19GVUxMU0NSRUVOLFdpbmRvd01hbmFnZXIuTGF5b3V0UGFyYW1zLkZMQUdfRlVMTFNDUkVFTik7CiAgICAgICAgc2V0Q29udGVudFZpZXcoUi5sYXlvdXQuYWN0aXZpdHlfZnVsbHNjcmVlbik7CiAgICAgICAgaW1hZ2VWaWV3ID0gZmluZFZpZXdCeUlkKFIuaWQuZnVsbEltYWdlKTsKICAgICAgICBjb3VudGVyID0gZmluZFZpZXdCeUlkKFIuaWQuY291bnRlcik7CiAgICAgICAgcGhvdG9zID0gZ2V0SW50ZW50KCkuZ2V0U3RyaW5nQXJyYXlMaXN0RXh0cmEoInBob3RvcyIpOwogICAgICAgIGluZGV4ID0gZ2V0SW50ZW50KCkuZ2V0SW50RXh0cmEoImluZGV4IiwgMCk7CiAgICAgICAgc2hvd1Bob3RvKCk7CiAgICAgICAgZmluZFZpZXdCeUlkKFIuaWQuYnRuUHJldikuc2V0T25DbGlja0xpc3RlbmVyKHYtPntpZihpbmRleD4wKXtpbmRleC0tO3Nob3dQaG90bygpO319KTsKICAgICAgICBmaW5kVmlld0J5SWQoUi5pZC5idG5OZXh0KS5zZXRPbkNsaWNrTGlzdGVuZXIodi0+e2lmKGluZGV4PHBob3Rvcy5zaXplKCktMSl7aW5kZXgrKztzaG93UGhvdG8oKTt9fSk7CiAgICAgICAgZmluZFZpZXdCeUlkKFIuaWQuYnRuQmFjaykuc2V0T25DbGlja0xpc3RlbmVyKHYtPmZpbmlzaCgpKTsKICAgIH0KICAgIHByaXZhdGUgdm9pZCBzaG93UGhvdG8oKXsKICAgICAgICBHbGlkZS53aXRoKHRoaXMpLmxvYWQocGhvdG9zLmdldChpbmRleCkpLmludG8oaW1hZ2VWaWV3KTsKICAgICAgICBjb3VudGVyLnNldFRleHQoKGluZGV4KzEpKyIgLyAiK3Bob3Rvcy5zaXplKCkpOwogICAgfQp9Cg==|base64 -d>app/src/main/java/com/gallery/app/FullscreenActivity.java
-          mkdir -p app/src/main/res/layout
-          echo PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPFJlbGF0aXZlTGF5b3V0IHhtbG5zOmFuZHJvaWQ9Imh0dHA6Ly9zY2hlbWFzLmFuZHJvaWQuY29tL2Fway9yZXMvYW5kcm9pZCIKICAgIGFuZHJvaWQ6bGF5b3V0X3dpZHRoPSJtYXRjaF9wYXJlbnQiIGFuZHJvaWQ6bGF5b3V0X2hlaWdodD0ibWF0Y2hfcGFyZW50IgogICAgYW5kcm9pZDpiYWNrZ3JvdW5kPSIjMTExMTExIj4KICAgIDxhbmRyb2lkeC5yZWN5Y2xlcnZpZXcud2lkZ2V0LlJlY3ljbGVyVmlldwogICAgICAgIGFuZHJvaWQ6aWQ9IkAraWQvcmVjeWNsZXJWaWV3IgogICAgICAgIGFuZHJvaWQ6bGF5b3V0X3dpZHRoPSJtYXRjaF9wYXJlbnQiCiAgICAgICAgYW5kcm9pZDpsYXlvdXRfaGVpZ2h0PSJtYXRjaF9wYXJlbnQiLz4KPC9SZWxhdGl2ZUxheW91dD4K|base64 -d>app/src/main/res/layout/activity_main.xml
-          mkdir -p app/src/main/res/layout
-          echo PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPFJlbGF0aXZlTGF5b3V0IHhtbG5zOmFuZHJvaWQ9Imh0dHA6Ly9zY2hlbWFzLmFuZHJvaWQuY29tL2Fway9yZXMvYW5kcm9pZCIKICAgIGFuZHJvaWQ6bGF5b3V0X3dpZHRoPSJtYXRjaF9wYXJlbnQiIGFuZHJvaWQ6bGF5b3V0X2hlaWdodD0ibWF0Y2hfcGFyZW50IgogICAgYW5kcm9pZDpiYWNrZ3JvdW5kPSIjMDAwMDAwIj4KICAgIDxJbWFnZVZpZXcgYW5kcm9pZDppZD0iQCtpZC9mdWxsSW1hZ2UiCiAgICAgICAgYW5kcm9pZDpsYXlvdXRfd2lkdGg9Im1hdGNoX3BhcmVudCIgYW5kcm9pZDpsYXlvdXRfaGVpZ2h0PSJtYXRjaF9wYXJlbnQiCiAgICAgICAgYW5kcm9pZDpzY2FsZVR5cGU9ImZpdENlbnRlciIvPgogICAgPFRleHRWaWV3IGFuZHJvaWQ6aWQ9IkAraWQvY291bnRlciIKICAgICAgICBhbmRyb2lkOmxheW91dF93aWR0aD0id3JhcF9jb250ZW50IiBhbmRyb2lkOmxheW91dF9oZWlnaHQ9IndyYXBfY29udGVudCIKICAgICAgICBhbmRyb2lkOmxheW91dF9jZW50ZXJIb3Jpem9udGFsPSJ0cnVlIiBhbmRyb2lkOmxheW91dF9hbGlnblBhcmVudFRvcD0idHJ1ZSIKICAgICAgICBhbmRyb2lkOmxheW91dF9tYXJnaW5Ub3A9IjQwZHAiIGFuZHJvaWQ6dGV4dENvbG9yPSIjZmZmZmZmIgogICAgICAgIGFuZHJvaWQ6dGV4dFNpemU9IjE2c3AiIGFuZHJvaWQ6YmFja2dyb3VuZD0iIzg4MDAwMDAwIiBhbmRyb2lkOnBhZGRpbmc9IjhkcCIvPgogICAgPEJ1dHRvbiBhbmRyb2lkOmlkPSJAK2lkL2J0bkJhY2siCiAgICAgICAgYW5kcm9pZDpsYXlvdXRfd2lkdGg9IjQ4ZHAiIGFuZHJvaWQ6bGF5b3V0X2hlaWdodD0iNDhkcCIKICAgICAgICBhbmRyb2lkOmxheW91dF9hbGlnblBhcmVudFRvcD0idHJ1ZSIgYW5kcm9pZDpsYXlvdXRfYWxpZ25QYXJlbnRFbmQ9InRydWUiCiAgICAgICAgYW5kcm9pZDpsYXlvdXRfbWFyZ2luPSIxMGRwIiBhbmRyb2lkOnRleHQ9IlgiIGFuZHJvaWQ6dGV4dENvbG9yPSIjZmZmIgogICAgICAgIGFuZHJvaWQ6YmFja2dyb3VuZD0iIzg4MDAwMDAwIi8+CiAgICA8QnV0dG9uIGFuZHJvaWQ6aWQ9IkAraWQvYnRuUHJldiIKICAgICAgICBhbmRyb2lkOmxheW91dF93aWR0aD0iNTZkcCIgYW5kcm9pZDpsYXlvdXRfaGVpZ2h0PSI1NmRwIgogICAgICAgIGFuZHJvaWQ6bGF5b3V0X2NlbnRlclZlcnRpY2FsPSJ0cnVlIiBhbmRyb2lkOmxheW91dF9hbGlnblBhcmVudEVuZD0idHJ1ZSIKICAgICAgICBhbmRyb2lkOmxheW91dF9tYXJnaW5FbmQ9IjhkcCIgYW5kcm9pZDp0ZXh0PSImbHQ7IiBhbmRyb2lkOnRleHRDb2xvcj0iI2ZmZiIKICAgICAgICBhbmRyb2lkOmJhY2tncm91bmQ9IiM4ODAwMDAwMCIgYW5kcm9pZDp0ZXh0U2l6ZT0iMjBzcCIvPgogICAgPEJ1dHRvbiBhbmRyb2lkOmlkPSJAK2lkL2J0bk5leHQiCiAgICAgICAgYW5kcm9pZDpsYXlvdXRfd2lkdGg9IjU2ZHAiIGFuZHJvaWQ6bGF5b3V0X2hlaWdodD0iNTZkcCIKICAgICAgICBhbmRyb2lkOmxheW91dF9jZW50ZXJWZXJ0aWNhbD0idHJ1ZSIgYW5kcm9pZDpsYXlvdXRfYWxpZ25QYXJlbnRTdGFydD0idHJ1ZSIKICAgICAgICBhbmRyb2lkOmxheW91dF9tYXJnaW5TdGFydD0iOGRwIiBhbmRyb2lkOnRleHQ9IiZndDsiIGFuZHJvaWQ6dGV4dENvbG9yPSIjZmZmIgogICAgICAgIGFuZHJvaWQ6YmFja2dyb3VuZD0iIzg4MDAwMDAwIiBhbmRyb2lkOnRleHRTaXplPSIyMHNwIi8+CjwvUmVsYXRpdmVMYXlvdXQ+Cg==|base64 -d>app/src/main/res/layout/activity_fullscreen.xml
-          mkdir -p app/src/main/res/values
-          echo PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHJlc291cmNlcz48c3RyaW5nIG5hbWU9ImFwcF9uYW1lIj7Zhdi52LHYtiDYp9mE2LXZiNixPC9zdHJpbmc+PC9yZXNvdXJjZXM+Cg==|base64 -d>app/src/main/res/values/strings.xml
-          mkdir -p app/src/main/res/values
-          echo PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHJlc291cmNlcz4KICAgIDxzdHlsZSBuYW1lPSJBcHBUaGVtZSIgcGFyZW50PSJUaGVtZS5BcHBDb21wYXQuTm9BY3Rpb25CYXIiPgogICAgICAgIDxpdGVtIG5hbWU9ImNvbG9yUHJpbWFyeSI+IzExMTExMTwvaXRlbT4KICAgICAgICA8aXRlbSBuYW1lPSJjb2xvclByaW1hcnlEYXJrIj4jMDAwMDAwPC9pdGVtPgogICAgICAgIDxpdGVtIG5hbWU9ImNvbG9yQWNjZW50Ij4jMGE2NmZmPC9pdGVtPgogICAgPC9zdHlsZT4KPC9yZXNvdXJjZXM+Cg==|base64 -d>app/src/main/res/values/styles.xml
-          echo aW1wb3J0IHN0cnVjdCx6bGliCmRlZiBwbmcocyk6CiAgICBkZWYgYyhuLGQpOgogICAgICAgIHI9emxpYi5jcmMzMihuK2QpJjB4ZmZmZmZmZmYKICAgICAgICByZXR1cm4gc3RydWN0LnBhY2soIj5JIixsZW4oZCkpK24rZCtzdHJ1Y3QucGFjaygiPkkiLHIpCiAgICByYXc9YiIiLmpvaW4oYiJceDAwIitieXRlcyhbMTAsMTAyLDI1NSwyNTVdKSpzIGZvciBfIGluIHJhbmdlKHMpKQogICAgcmV0dXJuIGIiXHg4OVBOR1xyXG5ceDFhXG4iK2MoYiJJSERSIixzdHJ1Y3QucGFjaygiPklJQkJCQkIiLHMscyw4LDIsMCwwLDApKStjKGIiSURBVCIsemxpYi5jb21wcmVzcyhyYXcpKStjKGIiSUVORCIsYiIiKQpzaXplcz17Im1pcG1hcC1tZHBpIjo0OCwibWlwbWFwLWhkcGkiOjcyLCJtaXBtYXAteGhkcGkiOjk2LCJtaXBtYXAteHhoZHBpIjoxNDQsIm1pcG1hcC14eHhoZHBpIjoxOTJ9CltvcGVuKGYiYXBwL3NyYy9tYWluL3Jlcy97ZH0ve259Iiwid2IiKS53cml0ZShwbmcocykpIGZvciBkLHMgaW4gc2l6ZXMuaXRlbXMoKSBmb3IgbiBpblsiaWNfbGF1bmNoZXIucG5nIiwiaWNfbGF1bmNoZXJfcm91bmQucG5nIl1dCg==|base64 -d>/tmp/mk_icons.py
-          python3 /tmp/mk_icons.py
-          $GRADLE assembleDebug --no-daemon
-    artifacts:
-      - app/build/outputs/**/*.apk
-    publishing:
-      email:
-        recipients:
-          - from.istanbul50@gmail.com
-        notify:
-          success: true
-          failure: true
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0a66ff">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="معرض الصور">
+<link rel="manifest" href="manifest.json">
+<title>معرض الصور</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#f0f0f4;font-family:'Noto Sans Arabic',sans-serif;color:#111}
+
+:root{
+  --bg:#f0f0f4;
+  --surface:#fff;
+  --border:rgba(0,0,0,.08);
+  --sub:#6e6e78;
+  --muted:#b0b0ba;
+  --accent:#0a66ff;
+}
+
+.shell{max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
+
+/* HERO */
+.hero{flex-shrink:0;position:relative;height:320px;background:#111;overflow:hidden}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease}
+.slide.on{opacity:1}
+.slide img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-grad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.2) 0%,transparent 45%,transparent 50%,rgba(0,0,0,.6) 100%);pointer-events:none}
+
+.menu-btn{
+  position:absolute;top:16px;right:16px;z-index:20;
+  width:42px;height:42px;border:none;
+  background:rgba(0,0,0,.38);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-radius:13px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  transition:background .15s
+}
+.menu-btn:active{background:rgba(0,0,0,.6)}
+.menu-btn span{display:block;width:19px;height:2px;background:#fff;border-radius:2px;transition:all .3s}
+.menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.menu-btn.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+.hero-info{position:absolute;bottom:14px;right:16px;left:16px;display:flex;align-items:flex-end;justify-content:space-between;z-index:5}
+.hero-title{color:#fff;font-size:18px;font-weight:700;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.hero-loc{color:rgba(255,255,255,.7);font-size:12px;margin-top:3px}
+.hero-dots{display:flex;gap:5px;align-items:center}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4);cursor:pointer;transition:all .4s}
+.dot.on{background:#fff;width:18px;border-radius:3px}
+.hero-prog{position:absolute;bottom:0;left:0;height:2.5px;background:rgba(255,255,255,.65);width:0;z-index:6}
+.hero-prog.run{width:100%;transition:width 10s linear}
+
+/* GRID */
+.grid-wrap{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.grid-wrap::-webkit-scrollbar{display:none}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2.5px;padding:2.5px}
+.cell{aspect-ratio:1;overflow:hidden;background:#ddd;cursor:pointer;position:relative}
+.cell img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s}
+.cell:active img{transform:scale(.93)}
+.cell.faved::after{content:'❤';position:absolute;top:5px;left:6px;font-size:12px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
+
+/* DRAWER */
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:90;pointer-events:none;transition:background .3s}
+.backdrop.on{background:rgba(0,0,0,.42);pointer-events:all}
+.drawer{position:fixed;top:0;right:-290px;width:275px;height:100%;background:var(--surface);z-index:100;display:flex;flex-direction:column;transition:right .3s cubic-bezier(.22,1,.36,1);box-shadow:-4px 0 28px rgba(0,0,0,.13)}
+.drawer.on{right:0}
+.drw-head{padding:52px 18px 18px;border-bottom:1px solid var(--border)}
+.drw-logo{font-size:10px;font-weight:700;letter-spacing:3px;color:var(--accent);margin-bottom:6px}
+.drw-name{font-size:21px;font-weight:900;letter-spacing:-.5px}
+.drw-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.drw-body{flex:1;overflow-y:auto;padding:10px 0}
+.drw-body::-webkit-scrollbar{display:none}
+.sec-label{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--muted);padding:12px 18px 5px;text-transform:uppercase}
+.drw-item{display:flex;align-items:center;gap:13px;padding:12px 18px;cursor:pointer;transition:background .15s}
+.drw-item:active{background:var(--bg)}
+.d-icon{width:40px;height:40px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.d-info{flex:1}
+.d-name{font-size:15px;font-weight:600}
+.d-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.d-badge{background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.drw-divider{height:1px;background:var(--border);margin:7px 18px}
+.drw-foot{padding:14px 18px 36px;border-top:1px solid var(--border)}
+.stor-label{font-size:11px;color:var(--muted);margin-bottom:7px;display:flex;justify-content:space-between}
+.stor-bar{height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+.stor-fill{height:100%;width:62%;background:linear-gradient(90deg,var(--accent),#5eaeff);border-radius:2px}
+
+/* LIGHTBOX */
+.lb{position:fixed;inset:0;z-index:200;background:#000;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .22s}
+.lb.on{opacity:1;pointer-events:all}
+.lb-top{position:absolute;top:0;left:0;right:0;padding:48px 14px 14px;background:linear-gradient(180deg,rgba(0,0,0,.72) 0%,transparent);display:flex;align-items:center;justify-content:space-between;z-index:2}
+.lb-btn{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.13);backdrop-filter:blur(10px);border:none;color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.lb-btn.red{color:#ff453a}
+.lb-ctr{color:rgba(255,255,255,.6);font-size:14px;font-weight:500}
+.lb-img{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.lb-img img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;transition:opacity .2s}
+.lb-arr{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:80px;display:flex;align-items:center;justify-content:center;z-index:3;cursor:pointer}
+.lb-arr-r{right:0}.lb-arr-l{left:0}
+.lb-arr-i{width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.38);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
+.lb-bot{position:absolute;bottom:0;left:0;right:0;padding:18px 16px 42px;background:linear-gradient(0deg,rgba(0,0,0,.78) 0%,transparent);z-index:2}
+.lb-ph-title{color:#fff;font-size:18px;font-weight:700}
+.lb-ph-meta{color:rgba(255,255,255,.55);font-size:13px;margin-top:4px}
+.lb-acts{display:flex;gap:8px;margin-top:14px}
+.lb-act{flex:1;height:44px;border-radius:12px;background:rgba(255,255,255,.13);backdrop-filter:blur(12px);border:none;color:#fff;font-family:'Noto Sans Arabic',sans-serif;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer}
+
+/* SEARCH */
+.sv{position:fixed;inset:0;background:var(--surface);z-index:80;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.sv.on{transform:translateY(0)}
+.sv-top{padding:50px 14px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sv-box{flex:1;display:flex;align-items:center;gap:9px;background:var(--bg);border-radius:12px;padding:0 13px;height:44px}
+.sv-box input{flex:1;border:none;background:transparent;font-family:'Noto Sans Arabic',sans-serif;font-size:15px;color:#111;direction:rtl}
+.sv-box input::placeholder{color:var(--muted)}
+.sv-box input:focus{outline:none}
+.sv-cancel{border:none;background:transparent;font-family:'Noto Sans Arabic',sans-serif;font-size:14px;font-weight:600;color:var(--accent);cursor:pointer;flex-shrink:0}
+.sv-res{flex:1;overflow-y:auto}
+.sv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2.5px;padding:10px 2.5px 2.5px}
+.sv-cell{aspect-ratio:1;overflow:hidden;background:var(--bg);cursor:pointer}
+.sv-cell img{width:100%;height:100%;object-fit:cover}
+.sv-empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.sv-empty-i{font-size:44px;margin-bottom:12px;opacity:.4}
+
+/* ALBUMS */
+.av{position:fixed;inset:0;background:var(--bg);z-index:80;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.av.on{transform:translateY(0)}
+.av-top{height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px}
+.av-top-title{flex:1;font-size:19px;font-weight:800}
+.av-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px;overflow-y:auto}
+.alb{background:var(--surface);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .2s;box-shadow:0 1px 6px rgba(0,0,0,.07)}
+.alb:active{transform:scale(.97)}
+.alb-img-w{position:relative;aspect-ratio:4/3;overflow:hidden}
+.alb-img-w img{width:100%;height:100%;object-fit:cover;display:block}
+.alb-img-w::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.42))}
+.alb-icon{position:absolute;bottom:8px;right:10px;font-size:22px;z-index:1}
+.alb-info{padding:10px 12px 12px}
+.alb-name{font-size:14px;font-weight:700}
+.alb-count{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* TOAST */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;padding:10px 22px;border-radius:30px;font-size:14px;font-weight:600;backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .3s;white-space:nowrap;z-index:999}
+.toast.on{opacity:1}
+
+*{scrollbar-width:none}*::-webkit-scrollbar{display:none}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="hero" id="hero">
+    <button class="menu-btn" id="menuBtn" onclick="toggleDrawer()">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="hero-grad"></div>
+    <div class="hero-info">
+      <div>
+        <div class="hero-title" id="hTitle">—</div>
+        <div class="hero-loc" id="hLoc">📍 —</div>
+      </div>
+      <div class="hero-dots" id="hDots"></div>
+    </div>
+    <div class="hero-prog" id="hProg"></div>
+  </div>
+  <div class="grid-wrap">
+    <div class="photo-grid" id="photoGrid"></div>
+  </div>
+</div>
+
+<div class="backdrop" id="backdrop" onclick="toggleDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drw-head">
+    <div class="drw-logo">Gallery App</div>
+    <div class="drw-name">معرض الصور</div>
+    <div class="drw-sub">12 صورة · 45.2 MB</div>
+  </div>
+  <div class="drw-body">
+    <div class="sec-label">عرض</div>
+    <div class="drw-item" onclick="filterTag('all');toggleDrawer()">
+      <div class="d-icon">⊞</div>
+      <div class="d-info"><div class="d-name">شبكة الصور</div><div class="d-sub">عرض كل الصور</div></div>
+    </div>
+    <div class="drw-item" onclick="openAlbums();toggleDrawer()">
+      <div class="d-icon">📁</div>
+      <div class="d-info"><div class="d-name">الألبومات</div><div class="d-sub">6 ألبومات</div></div>
+    </div>
+    <div class="drw-item" onclick="openSearch();toggleDrawer()">
+      <div class="d-icon">🔍</div>
+      <div class="d-info"><div class="d-name">بحث</div><div class="d-sub">ابحث في الصور</div></div>
+    </div>
+    <div class="drw-divider"></div>
+    <div class="sec-label">الفئات</div>
+    <div class="drw-item" onclick="filterTag('landscape');toggleDrawer()">
+      <div class="d-icon">🏔</div>
+      <div class="d-info"><div class="d-name">مناظر طبيعية</div><div class="d-sub">4 صور</div></div>
+      <div class="d-badge">4</div>
+    </div>
+    <div class="drw-item" onclick="filterTag('sea');toggleDrawer()">
+      <div class="d-icon">🌊</div>
+      <div class="d-info"><div class="d-name">البحر</div><div class="d-sub">2 صور</div></div>
+      <div class="d-badge">2</div>
+    </div>
+    <div class="drw-item" onclick="filterTag('night');toggleDrawer()">
+      <div class="d-icon">✨</div>
+      <div class="d-info"><div class="d-name">الليل</div><div class="d-sub">1 صورة</div></div>
+      <div class="d-badge">1</div>
+    </div>
+    <div class="drw-item" onclick="filterTag('nature');toggleDrawer()">
+      <div class="d-icon">🌿</div>
+      <div class="d-info"><div class="d-name">الطبيعة</div><div class="d-sub">3 صور</div></div>
+      <div class="d-badge">3</div>
+    </div>
+    <div class="drw-divider"></div>
+    <div class="drw-item" onclick="filterFav();toggleDrawer()">
+      <div class="d-icon">❤️</div>
+      <div class="d-info"><div class="d-name">المفضلة</div><div class="d-sub" id="favSub">0 صور</div></div>
+    </div>
+  </div>
+  <div class="drw-foot">
+    <div class="stor-label"><span>التخزين</span><span>45.2 MB / 64 GB</span></div>
+    <div class="stor-bar"><div class="stor-fill"></div></div>
+  </div>
+</div>
+
+<div class="lb" id="lb">
+  <div class="lb-top">
+    <button class="lb-btn" onclick="closeLb()">✕</button>
+    <div class="lb-ctr" id="lbCtr">1 / 12</div>
+    <button class="lb-btn" id="lbFavBtn" onclick="lbFav()">♡</button>
+  </div>
+  <div class="lb-img"><img id="lbImg" src="" alt="" referrerpolicy="no-referrer"></div>
+  <div class="lb-arr lb-arr-r" onclick="lbNav(1)"><div class="lb-arr-i">‹</div></div>
+  <div class="lb-arr lb-arr-l" onclick="lbNav(-1)"><div class="lb-arr-i">›</div></div>
+  <div class="lb-bot">
+    <div class="lb-ph-title" id="lbTitle">—</div>
+    <div class="lb-ph-meta" id="lbMeta">—</div>
+    <div class="lb-acts">
+      <button class="lb-act">⬆ مشاركة</button>
+      <button class="lb-act">✎ تعديل</button>
+    </div>
+  </div>
+</div>
+
+<div class="sv" id="sv">
+  <div class="sv-top">
+    <div class="sv-box">
+      <span style="font-size:16px;color:var(--muted)">🔍</span>
+      <input type="text" id="svInput" placeholder="ابحث..." oninput="doSearch()">
+    </div>
+    <button class="sv-cancel" onclick="closeSearch()">إلغاء</button>
+  </div>
+  <div class="sv-res">
+    <div class="sv-grid" id="svGrid"></div>
+    <div class="sv-empty" id="svEmpty" style="display:none">
+      <div class="sv-empty-i">🔍</div><div>لا توجد نتائج</div>
+    </div>
+  </div>
+</div>
+
+<div class="av" id="av">
+  <div class="av-top">
+    <button onclick="closeAlbums()" style="width:36px;height:36px;border:none;background:transparent;font-size:26px;cursor:pointer;color:var(--sub)">‹</button>
+    <div class="av-top-title">الألبومات</div>
+  </div>
+  <div class="av-grid" id="avGrid"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const P=[
+  {id:1, url:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&q=85&auto=format&fit=crop",th:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=70&auto=format&fit=crop",title:"Mountain Peaks",loc:"النمسا",tag:"landscape"},
+  {id:2, url:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&q=85&auto=format&fit=crop",th:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=70&auto=format&fit=crop",title:"Serene Shore",loc:"المالديف",tag:"sea"},
+  {id:3, url:"https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=900&q=85&auto=format&fit=crop",th:"https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=400&q=70&auto=format&fit=crop",title:"City Glow",loc:"نيويورك",tag:"city"},
+  {id:4, url:"https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=900&q=85&auto=format&fit=crop",th:"https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&q=70&auto=format&fit=crop",title:"Blue Lake",loc:"سويسرا",tag:"landscape"},
+  {id:5, url:"https://images.unsplash.com/photo-1501854140801-50d01698950b?w=900&q=85&auto=format&fit=crop",th:"https://images.unsplash.com/photo-1501854140801-50d01698950b?w=400&q=70&auto=format&fit=crop",title:"Deep Forest",loc:"كندا",tag:"nature"},
+  {id:6, url:"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&q=85&auto=format&fit=crop",th:"https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=400&q=70&auto=format&fit=crop",title:"Ice Caps",loc:"آيسلندا",tag:"landscape"},
+  {id:7, url:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=900&q=85&auto=format&fit=crop",th:"https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&q=70&auto=format&fit=crop",title:"Milky Way",loc:"الصحراء",tag:"night"},
+  {id:8, url:"https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=900&q=85&auto=format&fit=crop",th:"https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=400&q=70&auto=format&fit=crop",title:"Ocean Waves",loc:"هاواي",tag:"sea"},
+  {id:9, url:"https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=900&q=85&auto=format&fit=crop",th:"https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400&q=70&auto=format&fit=crop",title:"Grand Canyon",loc:"أريزونا",tag:"landscape"},
+  {id:10,url:"https://images.unsplash.com/photo-1440342359743-84fcb8c21f21?w=900&q=85&auto=format&fit=crop",th:"https://images.unsplash.com/photo-1440342359743-84fcb8c21f21?w=400&q=70&auto=format&fit=crop",title:"Golden Hour",loc:"المغرب",tag:"sky"},
+  {id:11,url:"https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=900&q=85&auto=format&fit=crop",th:"https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=400&q=70&auto=format&fit=crop",title:"Flower Field",loc:"هولندا",tag:"nature"},
+  {id:12,url:"https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=900&q=85&auto=format&fit=crop",th:"https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=400&q=70&auto=format&fit=crop",title:"Autumn Trees",loc:"اليابان",tag:"nature"},
+];
+const ALBUMS=[
+  {name:"المفضلة",icon:"❤️",tag:"fav"},
+  {name:"مناظر طبيعية",icon:"🏔",tag:"landscape"},
+  {name:"البحر",icon:"🌊",tag:"sea"},
+  {name:"الليل",icon:"✨",tag:"night"},
+  {name:"المدينة",icon:"🌆",tag:"city"},
+  {name:"الطبيعة",icon:"🌿",tag:"nature"},
+];
+
+let tag="all",favs=new Set(),hIdx=0,hOrder=[],hTimer=null,lbIdx=0,lbList=[],txS=0;
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]]}return b}
+
+function initHero(){
+  hOrder=shuffle(P.map(p=>p.id));
+  const hero=document.getElementById('hero');
+  P.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='slide';d.id='sl'+p.id;
+    const img=new Image();
+    img.referrerPolicy='no-referrer';
+    img.alt=p.title;img.src=p.th;
+    d.appendChild(img);
+    hero.insertBefore(d,hero.querySelector('.hero-grad'));
+  });
+  hOrder.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dot';d.onclick=()=>goSlide(i);
+    document.getElementById('hDots').appendChild(d);
+  });
+  goSlide(0);
+  hTimer=setInterval(()=>goSlide((hIdx+1)%hOrder.length),10000);
+}
+
+function goSlide(i){
+  hIdx=i;
+  const pid=hOrder[i],photo=P.find(p=>p.id===pid);
+  document.querySelectorAll('.slide').forEach(s=>s.classList.remove('on'));
+  const sl=document.getElementById('sl'+pid);if(sl)sl.classList.add('on');
+  document.getElementById('hTitle').textContent=photo.title;
+  document.getElementById('hLoc').textContent='📍 '+photo.loc;
+  document.querySelectorAll('.dot').forEach((d,j)=>d.classList.toggle('on',j===i));
+  const pg=document.getElementById('hProg');
+  pg.classList.remove('run');pg.style.transition='none';pg.style.width='0%';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{pg.style.transition='width 10s linear';pg.classList.add('run');}));
+}
+
+function getFiltered(){
+  if(tag==='all')return P;
+  if(tag==='fav')return P.filter(p=>favs.has(p.id));
+  return P.filter(p=>p.tag===tag);
+}
+
+function renderGrid(){
+  const list=getFiltered();
+  document.getElementById('photoGrid').innerHTML=list.map((p,i)=>
+    `<div class="cell${favs.has(p.id)?' faved':''}" onclick="openLb(${i},'grid')"><img src="${p.th}" alt="${p.title}" referrerpolicy="no-referrer" loading="lazy"></div>`
+  ).join('');
+  document.getElementById('favSub').textContent=favs.size+' صور';
+}
+
+function filterTag(t){tag=t;renderGrid();}
+function filterFav(){tag='fav';renderGrid();}
+
+function openLb(i,src){
+  lbList=src==='search'?getSearch():getFiltered();
+  lbIdx=i;renderLb();
+  document.getElementById('lb').classList.add('on');
+  document.addEventListener('keydown',lbKey);
+  const lb=document.getElementById('lb');
+  lb.addEventListener('touchstart',e=>{txS=e.touches[0].clientX;},{passive:true});
+  lb.addEventListener('touchend',e=>{const d=txS-e.changedTouches[0].clientX;if(Math.abs(d)>50)lbNav(d>0?1:-1);},{passive:true});
+}
+function closeLb(){document.getElementById('lb').classList.remove('on');document.removeEventListener('keydown',lbKey);}
+function renderLb(){
+  const p=lbList[lbIdx];if(!p)return;
+  const img=document.getElementById('lbImg');
+  img.style.opacity='0';img.referrerPolicy='no-referrer';img.src=p.url;
+  img.onload=()=>{img.style.opacity='1';};
+  document.getElementById('lbTitle').textContent=p.title;
+  document.getElementById('lbMeta').textContent='📍 '+p.loc;
+  document.getElementById('lbCtr').textContent=(lbIdx+1)+' / '+lbList.length;
+  const fb=document.getElementById('lbFavBtn');
+  fb.textContent=favs.has(p.id)?'❤':'♡';fb.className='lb-btn'+(favs.has(p.id)?' red':'');
+}
+function lbNav(d){lbIdx=(lbIdx+d+lbList.length)%lbList.length;renderLb();}
+function lbFav(){const p=lbList[lbIdx];if(!p)return;favs.has(p.id)?favs.delete(p.id):favs.add(p.id);renderLb();renderGrid();showToast(favs.has(p.id)?'❤ أُضيفت للمفضلة':'تمت الإزالة');}
+function lbKey(e){if(e.key==='ArrowLeft')lbNav(1);if(e.key==='ArrowRight')lbNav(-1);if(e.key==='Escape')closeLb();}
+
+function toggleDrawer(){
+  document.getElementById('drawer').classList.toggle('on');
+  document.getElementById('backdrop').classList.toggle('on');
+  document.getElementById('menuBtn').classList.toggle('open');
+}
+
+function openSearch(){document.getElementById('sv').classList.add('on');setTimeout(()=>document.getElementById('svInput').focus(),350);doSearch();}
+function closeSearch(){document.getElementById('sv').classList.remove('on');document.getElementById('svInput').value='';}
+function getSearch(){const q=document.getElementById('svInput').value.trim().toLowerCase();if(!q)return P;return P.filter(p=>p.title.toLowerCase().includes(q)||p.loc.includes(q)||p.tag.includes(q));}
+function doSearch(){
+  const res=getSearch();
+  const g=document.getElementById('svGrid'),em=document.getElementById('svEmpty');
+  if(!res.length){g.innerHTML='';em.style.display='block';return;}
+  em.style.display='none';
+  g.innerHTML=res.map((p,i)=>`<div class="sv-cell" onclick="openLb(${i},'search')"><img src="${p.th}" alt="${p.title}" referrerpolicy="no-referrer" loading="lazy"></div>`).join('');
+}
+
+function openAlbums(){
+  document.getElementById('av').classList.add('on');
+  document.getElementById('avGrid').innerHTML=ALBUMS.map(a=>{
+    const cnt=a.tag==='fav'?favs.size:P.filter(p=>p.tag===a.tag).length;
+    const cover=(a.tag==='fav'?P[0]:P.find(p=>p.tag===a.tag)||P[0]).th;
+    return`<div class="alb" onclick="filterTag('${a.tag}');closeAlbums()">
+      <div class="alb-img-w"><img src="${cover}" alt="${a.name}" referrerpolicy="no-referrer" loading="lazy"><div class="alb-icon">${a.icon}</div></div>
+      <div class="alb-info"><div class="alb-name">${a.name}</div><div class="alb-count">${cnt} صورة</div></div>
+    </div>`;
+  }).join('');
+}
+function closeAlbums(){document.getElementById('av').classList.remove('on');}
+
+let _tt=null;
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');if(_tt)clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('on'),2000);}
+
+initHero();
+renderGrid();
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
