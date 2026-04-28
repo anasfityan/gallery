@@ -146,6 +146,15 @@ html,body{height:100%;overflow:hidden;background:#f0f0f4;font-family:'Noto Sans 
 .toast.on{opacity:1}
 
 *{scrollbar-width:none}*::-webkit-scrollbar{display:none}
+
+/* PINCH ZOOM */
+.lb-img{position:relative;overflow:hidden;touch-action:none}
+#lbImg{transition:transform .15s ease-out;transform-origin:center center;will-change:transform}
+#lbImg.zoomed{cursor:grab}
+#lbImg.zoomed:active{cursor:grabbing}
+.zoom-hint{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:rgba(255,255,255,.75);font-size:12px;padding:5px 14px;border-radius:20px;pointer-events:none;opacity:0;transition:opacity .3s;z-index:4;white-space:nowrap}
+.zoom-hint.show{opacity:1}
+
 </style>
 </head>
 <body>
@@ -230,7 +239,7 @@ html,body{height:100%;overflow:hidden;background:#f0f0f4;font-family:'Noto Sans 
     <div class="lb-ctr" id="lbCtr">1 / 12</div>
     <button class="lb-btn" id="lbFavBtn" onclick="lbFav()">♡</button>
   </div>
-  <div class="lb-img"><img id="lbImg" src="" alt="" referrerpolicy="no-referrer"></div>
+  <div class="lb-img" id="lbImgWrap"><img id="lbImg" src="" alt="" referrerpolicy="no-referrer"><div class="zoom-hint" id="zoomHint">🤏 استخدم إصبعين للتكبير</div></div>
   <div class="lb-arr lb-arr-r" onclick="lbNav(1)"><div class="lb-arr-i">‹</div></div>
   <div class="lb-arr lb-arr-l" onclick="lbNav(-1)"><div class="lb-arr-i">›</div></div>
   <div class="lb-bot">
@@ -353,16 +362,20 @@ function openLb(i,src){
   lbIdx=i;renderLb();
   document.getElementById('lb').classList.add('on');
   document.addEventListener('keydown',lbKey);
+  zReset();
+  zoomHint.classList.add('show');
+  setTimeout(()=>zoomHint.classList.remove('show'),2500);
   const lb=document.getElementById('lb');
-  lb.addEventListener('touchstart',e=>{txS=e.touches[0].clientX;},{passive:true});
-  lb.addEventListener('touchend',e=>{const d=txS-e.changedTouches[0].clientX;if(Math.abs(d)>50)lbNav(d>0?1:-1);},{passive:true});
+  lb.addEventListener('touchstart',e=>{if(e.touches.length===1 && zScale<=1){txS=e.touches[0].clientX;}},{passive:true});
+  lb.addEventListener('touchend',e=>{if(zScale<=1){const d=txS-e.changedTouches[0].clientX;if(Math.abs(d)>50)lbNav(d>0?1:-1);}},{passive:true});
 }
-function closeLb(){document.getElementById('lb').classList.remove('on');document.removeEventListener('keydown',lbKey);}
+function closeLb(){document.getElementById('lb').classList.remove('on');document.removeEventListener('keydown',lbKey);zReset();}
 function renderLb(){
   const p=lbList[lbIdx];if(!p)return;
   const img=document.getElementById('lbImg');
   img.style.opacity='0';img.referrerPolicy='no-referrer';img.src=p.url;
   img.onload=()=>{img.style.opacity='1';};
+  zReset();
   document.getElementById('lbTitle').textContent=p.title;
   document.getElementById('lbMeta').textContent='📍 '+p.loc;
   document.getElementById('lbCtr').textContent=(lbIdx+1)+' / '+lbList.length;
@@ -415,6 +428,73 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   });
 }
+
+/* PINCH ZOOM LOGIC */
+let zScale=1,zPanX=0,zPanY=0,zStartDist=0,zStartScale=1,zStartPanX=0,zStartPanY=0,zPinching=false,zPanning=false,zPanStartX=0,zPanStartY=0,zMidX=0,zMidY=0;
+const lbImg=document.getElementById('lbImg');
+const lbImgWrap=document.getElementById('lbImgWrap');
+const zoomHint=document.getElementById('zoomHint');
+
+function zApply(){lbImg.style.transform=`translate(${zPanX}px,${zPanY}px) scale(${zScale})`;lbImg.classList.toggle('zoomed',zScale>1);}
+function zReset(){zScale=1;zPanX=0;zPanY=0;zApply();}
+function zDist(t){const dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.hypot(dx,dy);}
+function zMid(t){return{x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2};}
+
+lbImgWrap.addEventListener('touchstart',function(e){
+  if(e.touches.length===2){
+    zPinching=true;zPanning=false;
+    zStartDist=zDist(e.touches);
+    zStartScale=zScale;
+    const m=zMid(e.touches);
+    zMidX=m.x;zMidY=m.y;
+    zStartPanX=zPanX;zStartPanY=zPanY;
+    e.preventDefault();
+  }else if(e.touches.length===1 && zScale>1){
+    zPanning=true;zPinching=false;
+    zPanStartX=e.touches[0].clientX-zPanX;
+    zPanStartY=e.touches[0].clientY-zPanY;
+  }
+},{passive:false});
+
+lbImgWrap.addEventListener('touchmove',function(e){
+  if(zPinching && e.touches.length===2){
+    e.preventDefault();
+    const d=zDist(e.touches);
+    const ratio=d/zStartDist;
+    let ns=zStartScale*ratio;
+    ns=Math.min(Math.max(ns,1),4);
+    zScale=ns;
+    const m=zMid(e.touches);
+    zPanX=zStartPanX+(m.x-zMidX)*(1-zScale);
+    zPanY=zStartPanY+(m.y-zMidY)*(1-zScale);
+    zApply();
+  }else if(zPanning && e.touches.length===1 && zScale>1){
+    e.preventDefault();
+    zPanX=e.touches[0].clientX-zPanStartX;
+    zPanY=e.touches[0].clientY-zPanStartY;
+    zApply();
+  }
+},{passive:false});
+
+lbImgWrap.addEventListener('touchend',function(e){
+  if(zPinching && e.touches.length<2){
+    zPinching=false;
+    if(zScale<1.05){zReset();}
+    else{const r=lbImgWrap.getBoundingClientRect();const iw=lbImg.naturalWidth*zScale,ih=lbImg.naturalHeight*zScale;
+      const maxOffX=Math.max(0,(iw-r.width)/2),maxOffY=Math.max(0,(ih-r.height)/2);
+      zPanX=Math.min(Math.max(zPanX,-maxOffX),maxOffX);
+      zPanY=Math.min(Math.max(zPanY,-maxOffY),maxOffY);
+      zApply();
+    }
+  }
+  if(zPanning && e.touches.length===0)zPanning=false;
+});
+
+lbImgWrap.addEventListener('dblclick',function(e){
+  if(zScale>1){zReset();}
+  else{const r=lbImgWrap.getBoundingClientRect();zScale=2.5;zPanX=(r.width/2-e.clientX)*(zScale-1);zPanY=(r.height/2-e.clientY)*(zScale-1);zApply();}
+});
+
 </script>
 </body>
 </html>
