@@ -51,20 +51,42 @@ html,body{height:100%;overflow:hidden;background:#f0f0f4;font-family:'Noto Sans 
 .hero-info{position:absolute;bottom:14px;right:16px;left:16px;display:flex;align-items:flex-end;justify-content:space-between;z-index:5}
 .hero-title{color:#fff;font-size:18px;font-weight:700;text-shadow:0 1px 8px rgba(0,0,0,.6)}
 .hero-loc{color:rgba(255,255,255,.7);font-size:12px;margin-top:3px}
-.hero-dots{display:flex;gap:5px;align-items:center}
-.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4);cursor:pointer;transition:all .4s}
-.dot.on{background:#fff;width:18px;border-radius:3px}
 .hero-prog{position:absolute;bottom:0;left:0;height:2.5px;background:rgba(255,255,255,.65);width:0;z-index:6}
 .hero-prog.run{width:100%;transition:width 10s linear}
 
 /* GRID */
 .grid-wrap{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .grid-wrap::-webkit-scrollbar{display:none}
-.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2.5px;padding:2.5px}
-.cell{aspect-ratio:1;overflow:hidden;background:#ddd;cursor:pointer;position:relative}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:3px;background:var(--bg)}
+.cell{aspect-ratio:1;overflow:hidden;background:#e0e0e5;cursor:pointer;position:relative;border-radius:2px}
 .cell img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s}
 .cell:active img{transform:scale(.93)}
 .cell.faved::after{content:'❤';position:absolute;top:5px;left:6px;font-size:12px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
+
+/* GRID SIZE SLIDER */
+.grid-size-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:8px 16px 24px;display:flex;align-items:center;gap:12px;z-index:50;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.grid-size-bar.on{transform:translateY(0)}
+.gs-label{font-size:12px;color:var(--muted);white-space:nowrap}
+.gs-track{flex:1;height:4px;background:var(--bg);border-radius:2px;position:relative}
+.gs-thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:var(--accent);box-shadow:0 2px 8px rgba(10,102,255,.4);cursor:grab;touch-action:none}
+.gs-thumb:active{cursor:grabbing}
+.gs-fill{position:absolute;left:0;top:0;height:100%;background:var(--accent);border-radius:2px}
+
+/* LONG PRESS MENU */
+.ctx-menu{position:fixed;background:var(--surface);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.18);z-index:300;min-width:180px;overflow:hidden;opacity:0;transform:scale(.9);transition:opacity .15s,transform .15s;pointer-events:none}
+.ctx-menu.on{opacity:1;transform:scale(1);pointer-events:all}
+.ctx-item{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;transition:background .1s;font-size:15px}
+.ctx-item:active{background:var(--bg)}
+.ctx-item.danger{color:#ff453a}
+.ctx-divider{height:1px;background:var(--border);margin:0 12px}
+
+/* IMPORT OVERLAY */
+.import-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;opacity:0;pointer-events:none;transition:opacity .3s}
+.import-overlay.on{opacity:1;pointer-events:all}
+.import-spinner{width:48px;height:48px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.import-text{margin-top:16px;font-size:16px;font-weight:600}
+.import-sub{margin-top:6px;font-size:13px;color:rgba(255,255,255,.6)}
 
 /* DRAWER */
 .backdrop{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:90;pointer-events:none;transition:background .3s}
@@ -98,7 +120,7 @@ html,body{height:100%;overflow:hidden;background:#f0f0f4;font-family:'Noto Sans 
 .lb-btn{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.13);backdrop-filter:blur(10px);border:none;color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .lb-btn.red{color:#ff453a}
 .lb-ctr{color:rgba(255,255,255,.6);font-size:14px;font-weight:500}
-.lb-img{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.lb-img{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;touch-action:none}
 .lb-img img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;transition:opacity .2s}
 .lb-arr{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:80px;display:flex;align-items:center;justify-content:center;z-index:3;cursor:pointer}
 .lb-arr-r{right:0}.lb-arr-l{left:0}
@@ -108,6 +130,13 @@ html,body{height:100%;overflow:hidden;background:#f0f0f4;font-family:'Noto Sans 
 .lb-ph-meta{color:rgba(255,255,255,.55);font-size:13px;margin-top:4px}
 .lb-acts{display:flex;gap:8px;margin-top:14px}
 .lb-act{flex:1;height:44px;border-radius:12px;background:rgba(255,255,255,.13);backdrop-filter:blur(12px);border:none;color:#fff;font-family:'Noto Sans Arabic',sans-serif;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer}
+
+/* PINCH ZOOM */
+#lbImg{transition:transform .15s ease-out;transform-origin:center center;will-change:transform}
+#lbImg.zoomed{cursor:grab}
+#lbImg.zoomed:active{cursor:grabbing}
+.zoom-hint{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:rgba(255,255,255,.75);font-size:12px;padding:5px 14px;border-radius:20px;pointer-events:none;opacity:0;transition:opacity .3s;z-index:4;white-space:nowrap}
+.zoom-hint.show{opacity:1}
 
 /* SEARCH */
 .sv{position:fixed;inset:0;background:var(--surface);z-index:80;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1)}
@@ -146,15 +175,6 @@ html,body{height:100%;overflow:hidden;background:#f0f0f4;font-family:'Noto Sans 
 .toast.on{opacity:1}
 
 *{scrollbar-width:none}*::-webkit-scrollbar{display:none}
-
-/* PINCH ZOOM */
-.lb-img{position:relative;overflow:hidden;touch-action:none}
-#lbImg{transition:transform .15s ease-out;transform-origin:center center;will-change:transform}
-#lbImg.zoomed{cursor:grab}
-#lbImg.zoomed:active{cursor:grabbing}
-.zoom-hint{position:absolute;top:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:rgba(255,255,255,.75);font-size:12px;padding:5px 14px;border-radius:20px;pointer-events:none;opacity:0;transition:opacity .3s;z-index:4;white-space:nowrap}
-.zoom-hint.show{opacity:1}
-
 </style>
 </head>
 <body>
@@ -169,7 +189,6 @@ html,body{height:100%;overflow:hidden;background:#f0f0f4;font-family:'Noto Sans 
         <div class="hero-title" id="hTitle">—</div>
         <div class="hero-loc" id="hLoc">📍 —</div>
       </div>
-      <div class="hero-dots" id="hDots"></div>
     </div>
     <div class="hero-prog" id="hProg"></div>
   </div>
@@ -226,6 +245,16 @@ html,body{height:100%;overflow:hidden;background:#f0f0f4;font-family:'Noto Sans 
       <div class="d-icon">❤️</div>
       <div class="d-info"><div class="d-name">المفضلة</div><div class="d-sub" id="favSub">0 صور</div></div>
     </div>
+    <div class="drw-divider"></div>
+    <div class="sec-label">إعدادات</div>
+    <div class="drw-item" onclick="toggleGridSize();toggleDrawer()">
+      <div class="d-icon">⚙</div>
+      <div class="d-info"><div class="d-name">حجم الشبكة</div><div class="d-sub">تعديل عرض الصور</div></div>
+    </div>
+    <div class="drw-item" onclick="importPhotos();toggleDrawer()">
+      <div class="d-icon">📥</div>
+      <div class="d-info"><div class="d-name">استيراد صور</div><div class="d-sub">من هاتفك</div></div>
+    </div>
   </div>
   <div class="drw-foot">
     <div class="stor-label"><span>التخزين</span><span>45.2 MB / 64 GB</span></div>
@@ -239,7 +268,10 @@ html,body{height:100%;overflow:hidden;background:#f0f0f4;font-family:'Noto Sans 
     <div class="lb-ctr" id="lbCtr">1 / 12</div>
     <button class="lb-btn" id="lbFavBtn" onclick="lbFav()">♡</button>
   </div>
-  <div class="lb-img" id="lbImgWrap"><img id="lbImg" src="" alt="" referrerpolicy="no-referrer"><div class="zoom-hint" id="zoomHint">🤏 استخدم إصبعين للتكبير</div></div>
+  <div class="lb-img" id="lbImgWrap">
+    <img id="lbImg" src="" alt="" referrerpolicy="no-referrer">
+    <div class="zoom-hint" id="zoomHint">🤏 استخدم إصبعين للتكبير</div>
+  </div>
   <div class="lb-arr lb-arr-r" onclick="lbNav(1)"><div class="lb-arr-i">‹</div></div>
   <div class="lb-arr lb-arr-l" onclick="lbNav(-1)"><div class="lb-arr-i">›</div></div>
   <div class="lb-bot">
@@ -276,6 +308,28 @@ html,body{height:100%;overflow:hidden;background:#f0f0f4;font-family:'Noto Sans 
   <div class="av-grid" id="avGrid"></div>
 </div>
 
+<div class="grid-size-bar" id="gridSizeBar">
+  <span class="gs-label">صغير</span>
+  <div class="gs-track" id="gsTrack">
+    <div class="gs-fill" id="gsFill"></div>
+    <div class="gs-thumb" id="gsThumb"></div>
+  </div>
+  <span class="gs-label">كبير</span>
+</div>
+
+<div class="ctx-menu" id="ctxMenu">
+  <div class="ctx-item" onclick="ctxShare()"><span>⬆</span> مشاركة</div>
+  <div class="ctx-item" onclick="ctxInfo()"><span>ℹ</span> معلومات</div>
+  <div class="ctx-divider"></div>
+  <div class="ctx-item danger" onclick="ctxDelete()"><span>🗑</span> حذف</div>
+</div>
+
+<div class="import-overlay" id="importOverlay">
+  <div class="import-spinner"></div>
+  <div class="import-text">جاري استيراد الصور...</div>
+  <div class="import-sub" id="importSub">0 صورة</div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -303,6 +357,7 @@ const ALBUMS=[
 ];
 
 let tag="all",favs=new Set(),hIdx=0,hOrder=[],hTimer=null,lbIdx=0,lbList=[],txS=0;
+let gridCols=3,ctxPhoto=null;
 
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]]}return b}
 
@@ -318,11 +373,6 @@ function initHero(){
     d.appendChild(img);
     hero.insertBefore(d,hero.querySelector('.hero-grad'));
   });
-  hOrder.forEach((_,i)=>{
-    const d=document.createElement('div');
-    d.className='dot';d.onclick=()=>goSlide(i);
-    document.getElementById('hDots').appendChild(d);
-  });
   goSlide(0);
   hTimer=setInterval(()=>goSlide((hIdx+1)%hOrder.length),10000);
 }
@@ -334,7 +384,6 @@ function goSlide(i){
   const sl=document.getElementById('sl'+pid);if(sl)sl.classList.add('on');
   document.getElementById('hTitle').textContent=photo.title;
   document.getElementById('hLoc').textContent='📍 '+photo.loc;
-  document.querySelectorAll('.dot').forEach((d,j)=>d.classList.toggle('on',j===i));
   const pg=document.getElementById('hProg');
   pg.classList.remove('run');pg.style.transition='none';pg.style.width='0%';
   requestAnimationFrame(()=>requestAnimationFrame(()=>{pg.style.transition='width 10s linear';pg.classList.add('run');}));
@@ -346,18 +395,177 @@ function getFiltered(){
   return P.filter(p=>p.tag===tag);
 }
 
+/* ========== GRID SIZE SLIDER ========== */
+function setGridCols(c){
+  gridCols=Math.min(Math.max(c,2),5);
+  document.getElementById('photoGrid').style.gridTemplateColumns='repeat('+gridCols+',1fr)';
+  updateSliderUI();
+}
+
+function updateSliderUI(){
+  const pct=(gridCols-2)/3;
+  document.getElementById('gsFill').style.width=(pct*100)+'%';
+  document.getElementById('gsThumb').style.left=(pct*100)+'%';
+}
+
+function initGridSlider(){
+  const track=document.getElementById('gsTrack');
+  const thumb=document.getElementById('gsThumb');
+  let dragging=false;
+
+  function setFromX(x){
+    const r=track.getBoundingClientRect();
+    let p=(x-r.left)/r.width;
+    p=Math.min(Math.max(p,0),1);
+    const cols=2+Math.round(p*3);
+    setGridCols(cols);
+  }
+
+  thumb.addEventListener('touchstart',e=>{dragging=true;e.preventDefault();},{passive:false});
+  document.addEventListener('touchmove',e=>{if(dragging){setFromX(e.touches[0].clientX);e.preventDefault();}},{passive:false});
+  document.addEventListener('touchend',()=>{dragging=false;});
+
+  thumb.addEventListener('mousedown',e=>{dragging=true;e.preventDefault();});
+  document.addEventListener('mousemove',e=>{if(dragging)setFromX(e.clientX);});
+  document.addEventListener('mouseup',()=>{dragging=false;});
+
+  track.addEventListener('click',e=>setFromX(e.clientX));
+}
+
+function toggleGridSize(){document.getElementById('gridSizeBar').classList.toggle('on');}
+
+/* ========== LONG PRESS CONTEXT MENU ========== */
+function initLongPress(){
+  const grid=document.getElementById('photoGrid');
+  let timer=null,tx,ty;
+
+  grid.addEventListener('touchstart',e=>{
+    const el=e.target.closest('.cell');
+    if(!el)return;
+    const idx=[...grid.children].indexOf(el);
+    const list=getFiltered();
+    ctxPhoto=list[idx];
+    tx=e.touches[0].clientX;ty=e.touches[0].clientY;
+    timer=setTimeout(()=>showCtx(tx,ty),500);
+  },{passive:true});
+
+  grid.addEventListener('touchmove',()=>{if(timer){clearTimeout(timer);timer=null;}},{passive:true});
+  grid.addEventListener('touchend',()=>{if(timer){clearTimeout(timer);timer=null;}},{passive:true});
+
+  grid.addEventListener('mousedown',e=>{
+    const el=e.target.closest('.cell');
+    if(!el)return;
+    const idx=[...grid.children].indexOf(el);
+    const list=getFiltered();
+    ctxPhoto=list[idx];
+    timer=setTimeout(()=>showCtx(e.clientX,e.clientY),500);
+  });
+  grid.addEventListener('mouseup',()=>{if(timer){clearTimeout(timer);timer=null;}});
+  grid.addEventListener('mousemove',()=>{if(timer){clearTimeout(timer);timer=null;}});
+}
+
+function showCtx(x,y){
+  const m=document.getElementById('ctxMenu');
+  m.style.left=Math.min(x,window.innerWidth-200)+'px';
+  m.style.top=Math.min(y,window.innerHeight-180)+'px';
+  m.classList.add('on');
+}
+function hideCtx(){document.getElementById('ctxMenu').classList.remove('on');}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.ctx-menu') && !e.target.closest('.cell'))hideCtx();
+});
+
+function ctxShare(){
+  if(!ctxPhoto)return;
+  if(navigator.share){
+    navigator.share({title:ctxPhoto.title,url:ctxPhoto.url}).catch(()=>{});
+  }else{
+    showToast('تم نسخ الرابط');
+    navigator.clipboard.writeText(ctxPhoto.url).catch(()=>{});
+  }
+  hideCtx();
+}
+function ctxInfo(){
+  if(!ctxPhoto)return;
+  showToast(ctxPhoto.title+' · '+ctxPhoto.loc+' · '+ctxPhoto.tag);
+  hideCtx();
+}
+function ctxDelete(){
+  if(!ctxPhoto)return;
+  const i=P.findIndex(p=>p.id===ctxPhoto.id);
+  if(i>-1){P.splice(i,1);renderGrid();showToast('🗑 تم الحذف');}
+  hideCtx();
+}
+
+/* ========== PHOTO IMPORT ========== */
+async function importPhotos(){
+  const ov=document.getElementById('importOverlay');
+  const sub=document.getElementById('importSub');
+  ov.classList.add('on');
+
+  try{
+    if('showOpenFilePicker' in window){
+      const picker=await window.showOpenFilePicker({
+        types:[{description:'Images',accept:{'image/*':['.png','.jpg','.jpeg','.webp','.gif']}}],
+        multiple:true
+      });
+      let count=0;
+      for(const fileHandle of picker){
+        const file=await fileHandle.getFile();
+        if(file.type.startsWith('image/')){
+          const url=URL.createObjectURL(file);
+          P.push({id:Date.now()+count,url:url,th:url,title:file.name.replace(/\.[^.]+$/,''),loc:'هاتفي',tag:'imported'});
+          count++;
+          sub.textContent=count+' صورة';
+        }
+      }
+      if(count>0){
+        if(!ALBUMS.find(a=>a.tag==='imported'))
+          ALBUMS.push({name:'مستوردة',icon:'📥',tag:'imported'});
+        renderGrid();showToast('✅ تم استيراد '+count+' صورة');
+      }
+    }else{
+      const input=document.createElement('input');
+      input.type='file';input.accept='image/*';input.multiple=true;
+      input.onchange=e=>{
+        const files=Array.from(e.target.files).filter(f=>f.type.startsWith('image/'));
+        files.forEach((file,i)=>{
+          const url=URL.createObjectURL(file);
+          P.push({id:Date.now()+i,url:url,th:url,title:file.name.replace(/\.[^.]+$/,''),loc:'هاتفي',tag:'imported'});
+        });
+        if(files.length>0){
+          if(!ALBUMS.find(a=>a.tag==='imported'))
+            ALBUMS.push({name:'مستوردة',icon:'📥',tag:'imported'});
+          renderGrid();showToast('✅ تم استيراد '+files.length+' صورة');
+        }
+        sub.textContent=files.length+' صورة';
+        setTimeout(()=>ov.classList.remove('on'),500);
+      };
+      input.click();
+      return;
+    }
+  }catch(err){
+    console.log('Import cancelled',err);
+  }
+  setTimeout(()=>ov.classList.remove('on'),800);
+}
+
 function renderGrid(){
   const list=getFiltered();
   document.getElementById('photoGrid').innerHTML=list.map((p,i)=>
-    `<div class="cell${favs.has(p.id)?' faved':''}" onclick="openLb(${i},'grid')"><img src="${p.th}" alt="${p.title}" referrerpolicy="no-referrer" loading="lazy"></div>`
+    `<div class="cell${favs.has(p.id)?' faved':''}" data-idx="${i}" onclick="openLb(${i},'grid')" oncontextmenu="return false;"><img src="${p.th}" alt="${p.title}" referrerpolicy="no-referrer" loading="lazy" draggable="false"></div>`
   ).join('');
   document.getElementById('favSub').textContent=favs.size+' صور';
+  document.querySelector('.drw-sub').textContent=P.length+' صورة · '+(P.length*3.8).toFixed(1)+' MB';
 }
 
 function filterTag(t){tag=t;renderGrid();}
 function filterFav(){tag='fav';renderGrid();}
 
+/* ========== LIGHTBOX ========== */
 function openLb(i,src){
+  if(document.getElementById('ctxMenu').classList.contains('on'))return;
   lbList=src==='search'?getSearch():getFiltered();
   lbIdx=i;renderLb();
   document.getElementById('lb').classList.add('on');
@@ -419,17 +627,7 @@ function closeAlbums(){document.getElementById('av').classList.remove('on');}
 let _tt=null;
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');if(_tt)clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('on'),2000);}
 
-initHero();
-renderGrid();
-
-// Register Service Worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  });
-}
-
-/* PINCH ZOOM LOGIC */
+/* ========== PINCH ZOOM ========== */
 let zScale=1,zPanX=0,zPanY=0,zStartDist=0,zStartScale=1,zStartPanX=0,zStartPanY=0,zPinching=false,zPanning=false,zPanStartX=0,zPanStartY=0,zMidX=0,zMidY=0;
 const lbImg=document.getElementById('lbImg');
 const lbImgWrap=document.getElementById('lbImgWrap');
@@ -495,6 +693,18 @@ lbImgWrap.addEventListener('dblclick',function(e){
   else{const r=lbImgWrap.getBoundingClientRect();zScale=2.5;zPanX=(r.width/2-e.clientX)*(zScale-1);zPanY=(r.height/2-e.clientY)*(zScale-1);zApply();}
 });
 
+/* ========== INIT ========== */
+initHero();
+renderGrid();
+initGridSlider();
+initLongPress();
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
